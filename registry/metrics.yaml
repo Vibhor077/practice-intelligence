@@ -1,0 +1,218 @@
+# Metric registry v0 — Patient Contact & Access slice + the four NHS access measures.
+#
+# Status of every entry is `draft` until:
+#   1. source fields are confirmed against the real file (Step 1 data inventory), and
+#   2. the value for >= 3 real practices is checked by hand against the source (Step 7).
+# `fields: TBD` means the column names have not been confirmed yet. Do not guess them.
+#
+# assurance: contract_requirement | national_ambition | qof_threshold | local_expectation | benchmark
+# direction: lower_better | higher_better | neutral
+
+defaults:
+  comparators: [pcn_rank, icb_median, england_median, own_trend]
+  min_denominator: 30          # suppress rates below this
+  status_basis: icb_median     # unless a target/ambition applies
+
+sources:
+  cbt:   {name: "Cloud based telephony data in general practice", publisher: "NHS England", grain: practice-month, verify: "confirm hourly/weekday breakdown and callback fields exist per practice"}
+  gpad:  {name: "Appointments in General Practice (practice level)", publisher: "NHS England", grain: practice-month, verify: "confirm which breakdowns are practice-level vs sub-ICB only; confirm 2026/27 access-measure fields"}
+  ocs:   {name: "Submissions via online consultation systems", publisher: "NHS England", grain: practice-month}
+  gpps:  {name: "GP Patient Survey", publisher: "NHS England / Ipsos", grain: practice-year}
+  reg:   {name: "Patients registered at a GP practice", publisher: "NHS England", grain: practice-month}
+  wf:    {name: "General Practice Workforce", publisher: "NHS England", grain: practice-month-or-quarter, verify: "cadence and FTE definitions"}
+  ods:   {name: "ODS practice, PCN and ICB mappings", publisher: "NHS England ODS", grain: effective-dated}
+  imd:   {name: "English indices of deprivation (practice-weighted)", publisher: "MHCLG / OHID Fingertips", grain: static}
+
+metrics:
+  # ---------------- telephony (Patient contact & access) ----------------
+  - id: tel_calls_per_1000
+    name: "Calls per 1,000 patients"
+    area: contact
+    source: cbt
+    fields: TBD
+    formula: "inbound_calls / list_size * 1000"
+    denominator: {metric: reg_list_size, period: same_month}
+    unit: count_per_1000
+    direction: neutral            # high volume is context, not failure
+    assurance: benchmark
+    validation: draft
+
+  - id: tel_answered_pct
+    name: "Calls answered"
+    area: contact
+    source: cbt
+    fields: TBD
+    formula: "answered_calls / inbound_calls"
+    denominator: {field: inbound_calls}
+    unit: pct
+    direction: higher_better
+    assurance: benchmark
+    validation: draft
+    open_question: "Are callback-requested and IVR-resolved calls counted as answered? Defines the denominator for tel_wait_5m_pct."
+
+  - id: tel_wait_5m_pct
+    name: "Answered calls waiting 5+ minutes"
+    area: contact
+    source: cbt
+    fields: TBD
+    formula: "answered_calls_wait_over_5m / answered_calls"
+    denominator: {metric: tel_answered_pct, part: numerator}
+    unit: pct
+    direction: lower_better
+    assurance: benchmark
+    reconcile_with: [tel_answered_pct]     # QA error if implied denominators disagree by > 2%
+    validation: draft
+
+  - id: tel_abandoned_pct
+    name: "Callers who hung up while waiting"
+    area: contact
+    source: cbt
+    fields: TBD
+    formula: "abandoned_in_queue / inbound_calls"
+    unit: pct
+    direction: lower_better
+    assurance: benchmark
+    validation: draft
+    open_question: "Separate 'before queue' vs 'in queue' in source? Overlap with callback?"
+
+  - id: tel_callback_completed_pct
+    name: "Callbacks completed"
+    area: contact
+    source: cbt
+    fields: TBD
+    formula: "callbacks_completed / callbacks_requested"
+    unit: pct
+    direction: higher_better
+    assurance: benchmark
+    validation: draft
+
+  - id: tel_wait_mean_morning
+    name: "Morning call wait (8–10am)"
+    area: contact
+    access_measure: true
+    source: cbt
+    fields: TBD
+    formula: "mean wait to answer, calls arriving 08:00–09:59"
+    unit: seconds
+    direction: lower_better
+    assurance: benchmark
+    validation: draft
+    open_question: "Only if hourly data exists per practice. If not, drop this card rather than approximate."
+
+  - id: tel_wait_mean_core
+    name: "Core-hours call wait"
+    area: contact
+    access_measure: true
+    source: cbt
+    fields: TBD
+    formula: "mean wait to answer, 08:00–18:29"
+    unit: seconds
+    direction: lower_better
+    assurance: benchmark
+    validation: draft
+
+  - id: tel_wait_5m_by_hour
+    name: "Long waits by weekday and hour"
+    area: contact
+    kind: breakdown
+    dims: [weekday, hour]
+    source: cbt
+    fields: TBD
+    unit: pct
+    direction: lower_better
+    assurance: benchmark
+    validation: draft
+    open_question: "Practice-level hourly breakdown published? If not, heatmap is dropped from L3."
+
+  # ---------------- online ----------------
+  - id: ocs_per_1000
+    name: "Online requests per 1,000 patients"
+    area: contact
+    source: ocs
+    fields: TBD
+    formula: "submissions / list_size * 1000"
+    denominator: {metric: reg_list_size, period: same_month}
+    unit: count_per_1000
+    direction: neutral
+    assurance: benchmark
+    validation: draft
+
+  # ---------------- patient voice ----------------
+  - id: gpps_phone_ease
+    name: "Find it easy to contact the practice by phone"
+    area: contact
+    also_used_by: [experience]
+    source: gpps
+    fields: TBD
+    formula: "weighted % 'very easy' + 'fairly easy'"
+    unit: pct
+    direction: higher_better
+    assurance: benchmark
+    period_alignment: "annual; pair with operational months inside the fieldwork window where possible, otherwise label as 'survey year'"
+    validation: draft
+
+  # ---------------- NHS access measures (Appointment access) ----------------
+  - id: appt_urgent_same_day_pct
+    name: "Clinically urgent requests dealt with same day"
+    area: appointments
+    access_measure: true
+    source: gpad
+    fields: TBD
+    unit: pct
+    direction: higher_better
+    assurance: national_ambition
+    target: {value: 90, label: "National ambition 90%"}
+    contract_note: "2026/27 contract: clinically urgent requests identified by the practice are dealt with on the same day. 90% is an ambition, not a breach threshold."
+    validation: draft
+
+  - id: appt_routine_7d_pct
+    name: "Routine requests seen within 7 days"
+    area: appointments
+    access_measure: true
+    source: gpad
+    fields: TBD
+    unit: pct
+    direction: higher_better
+    assurance: benchmark
+    validation: draft
+
+  - id: appt_routine_14d_pct
+    name: "Routine requests seen within 14 days"
+    area: appointments
+    access_measure: true
+    source: gpad
+    fields: TBD
+    unit: pct
+    direction: higher_better
+    assurance: benchmark
+    validation: draft
+
+  # ---------------- denominators & context ----------------
+  - id: reg_list_size
+    name: "Registered patients"
+    area: context
+    source: reg
+    fields: TBD
+    unit: count
+    direction: neutral
+    assurance: benchmark
+    validation: draft
+    note: "Use the list size for the same month as the numerator. List cleansing causes step changes; flag month-on-month moves > 3%."
+
+# ---------------- rules referenced by the engine ----------------
+rules:
+  status:
+    # benchmark metrics: position vs ICB median, scaled by ICB IQR
+    benchmark: {attention: "worse than ICB P80", watch: "worse than ICB median", good: "better than ICB P20"}
+    national_ambition: {attention: "below target by > 5 pts", watch: "below target", good: "at or above target"}
+  materiality:   # What Changed
+    min_points: 3
+    min_abs_change: {pct: 3.0, count_per_1000: 10}
+    must_exceed: "2x the practice's own month-to-month standard deviation"
+    exclude_if: ["list_size change > 3% in window", "source flagged as revised"]
+  priority:
+    formula: "status_weight * assurance_weight * min(1, gap_to_comparator / comparator_iqr) * direction_factor"
+    status_weight: {attention: 1.0, watch: 0.6, normal: 0.2, good: 0.1}
+    assurance_weight: {contract_requirement: 1.0, qof_threshold: 0.9, national_ambition: 0.85, local_expectation: 0.8, benchmark: 0.7}
+    direction_factor: {deteriorating: 1.15, stable: 1.0, improving: 0.85}
+    corroboration_bonus: "x1.1 when GPPS points the same way"

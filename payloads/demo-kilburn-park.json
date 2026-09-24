@@ -1,0 +1,2273 @@
+{
+ "schema_version": "0.1.0",
+ "run": {
+  "id": "demo-2026-07",
+  "generated_at": "2026-09-23T12:00:00Z",
+  "mode": "fixture"
+ },
+ "practice": {
+  "ods_code": "E84000",
+  "name": "Kilburn Park Medical Centre",
+  "icb": "North West London ICB",
+  "pcn": {
+   "name": "Kilburn PCN",
+   "size": 4
+  },
+  "period": {
+   "label": "July 2026",
+   "end": "2026-07-31"
+  }
+ },
+ "context": [
+  {
+   "label": "Registered patients",
+   "value": {
+    "d": "6,807",
+    "v": 6807,
+    "prov": "real"
+   },
+   "delta": {
+    "d": "▲0.4%",
+    "v": null,
+    "prov": "illustrative"
+   }
+  },
+  {
+   "label": "IMD decile",
+   "value": {
+    "d": "2 / 10",
+    "v": 2,
+    "prov": "illustrative"
+   },
+   "hint": "1 = most deprived"
+  },
+  {
+   "label": "Aged 60+",
+   "value": {
+    "d": "11%",
+    "v": 11,
+    "prov": "illustrative"
+   }
+  },
+  {
+   "label": "Data period",
+   "value": {
+    "d": "Jul 2026",
+    "v": null,
+    "prov": "real"
+   }
+  }
+ ],
+ "assessment": {
+  "lines": [
+   {
+    "status": "attention",
+    "area": "contact",
+    "prov": "real",
+    "text": "Telephone access is the clearest pressure: over a third of answered calls wait 5+ minutes, three times the ICB rate."
+   },
+   {
+    "status": "attention",
+    "area": "qof",
+    "prov": "real",
+    "text": "Most unachieved QOF points sit in childhood immunisations, where the new improvement route pays more than the standard thresholds."
+   },
+   {
+    "status": "watch",
+    "area": "appointments",
+    "prov": "illustrative",
+    "text": "Routine appointment access compares well; urgent same-day should be checked against the 90% national ambition."
+   }
+  ],
+  "method": "Written from rule-generated findings. Every number is checked against this page's data."
+ },
+ "attention": {
+  "area": "contact",
+  "state": "emerging_pressure",
+  "title": "Telephone waiting times",
+  "text": "More than a third of answered calls wait over five minutes, the longest in your PCN. Waits are worst between 8 and 10am.",
+  "metric": {
+   "d": "35.8%",
+   "v": 35.8,
+   "prov": "real"
+  },
+  "metric_label": "of answered calls waited 5+ min",
+  "compare": [
+   {
+    "label": "You",
+    "value": {
+     "d": "35.8%",
+     "v": 35.8,
+     "prov": "real"
+    },
+    "tone": "crit"
+   },
+   {
+    "label": "ICB",
+    "value": {
+     "d": "10.5%",
+     "v": 10.5,
+     "prov": "real"
+    },
+    "tone": "cmp"
+   },
+   {
+    "label": "England",
+    "value": {
+     "d": "12.8%",
+     "v": 12.8,
+     "prov": "illustrative"
+    },
+    "tone": "cmp"
+   }
+  ],
+  "scale_max": 50,
+  "why": [
+   "Attention status",
+   "4th of 4 in PCN",
+   "3.4× ICB rate",
+   "Patients report the same"
+  ]
+ },
+ "changes": {
+  "basis": "July vs May · only 3 months of data so far",
+  "items": [
+   {
+    "label": "Calls waiting 5+ min",
+    "delta": {
+     "d": "▲ 6.8 pts",
+     "v": null,
+     "prov": "real"
+    },
+    "direction": "up",
+    "good": false,
+    "text": "Rising each month since May.",
+    "series": [
+     29,
+     31,
+     33,
+     35.8
+    ],
+    "series_prov": "illustrative",
+    "area": "contact"
+   },
+   {
+    "label": "Appointments delivered",
+    "delta": {
+     "d": "▲ 25%",
+     "v": null,
+     "prov": "real"
+    },
+    "direction": "up",
+    "good": null,
+    "text": "Nearby practices flat.",
+    "series": [
+     100,
+     111,
+     125
+    ],
+    "series_prov": "real",
+    "area": "workforce",
+    "flag": "Verify: possible recording change"
+   },
+   {
+    "label": "Urgent seen same day",
+    "delta": {
+     "d": "▼ 5 pts",
+     "v": null,
+     "prov": "illustrative"
+    },
+    "direction": "down",
+    "good": false,
+    "text": "Falling as demand rose.",
+    "series": [
+     89,
+     87,
+     84
+    ],
+    "series_prov": "illustrative",
+    "area": "appointments"
+   }
+  ]
+ },
+ "access_measures": {
+  "pending_text": "The four NHS access measures are being calculated from the July 2026 appointments and telephony data.",
+  "items": [
+   {
+    "label": "Morning call wait",
+    "sub": "8–10am, average",
+    "value": {
+     "d": "6m 40s",
+     "v": 400,
+     "prov": "illustrative"
+    },
+    "status": "attention",
+    "assurance": "benchmark",
+    "bullet": {
+     "v": 400,
+     "cmp": 170,
+     "max": 600,
+     "cmp_label": "ICB 2m 50s"
+    },
+    "area": "contact"
+   },
+   {
+    "label": "Core-hours call wait",
+    "sub": "8am–6.30pm, average",
+    "value": {
+     "d": "3m 55s",
+     "v": 235,
+     "prov": "illustrative"
+    },
+    "status": "attention",
+    "assurance": "benchmark",
+    "bullet": {
+     "v": 235,
+     "cmp": 105,
+     "max": 420,
+     "cmp_label": "ICB 1m 45s"
+    },
+    "area": "contact"
+   },
+   {
+    "label": "Clinically urgent",
+    "sub": "dealt with same day",
+    "value": {
+     "d": "84%",
+     "v": 84,
+     "prov": "illustrative"
+    },
+    "status": "watch",
+    "assurance": "national_ambition",
+    "bullet": {
+     "v": 84,
+     "cmp": 91,
+     "max": 100,
+     "target": 90,
+     "cmp_label": "ICB 91%",
+     "target_label": "Ambition 90%"
+    },
+    "footnote": "Contract: urgent requests handled same day. 90% is a national ambition, not a breach line.",
+    "area": "appointments"
+   },
+   {
+    "label": "Routine access",
+    "sub": "seen within 7 · 14 days",
+    "value": {
+     "d": "71% · 89%",
+     "v": 89,
+     "prov": "illustrative"
+    },
+    "status": "good",
+    "assurance": "benchmark",
+    "bullet": {
+     "v": 89,
+     "cmp": 81,
+     "max": 100,
+     "cmp_label": "ICB ≤14d 81%"
+    },
+    "area": "appointments"
+   }
+  ]
+ },
+ "groups": [
+  {
+   "id": "access",
+   "title": "Access",
+   "question": "Can patients reach you, and are they seen in time?"
+  },
+  {
+   "id": "capacity",
+   "title": "Capacity & delivery",
+   "question": "Is capacity keeping pace, and where is it being lost?"
+  },
+  {
+   "id": "quality",
+   "title": "Quality & income",
+   "question": "Where is income left on the table, and what do patients say?"
+  },
+  {
+   "id": "prevention",
+   "title": "Prevention & population health",
+   "question": "Where might patients be missing preventive or ongoing care?"
+  }
+ ],
+ "areas": {
+  "contact": {
+   "group": "access",
+   "title": "Patient contact & access",
+   "question": "Can patients reach us when they need us?",
+   "status": "attention",
+   "assurance": "benchmark",
+   "priority": 0.92,
+   "headline": "Patients get through, but a third of answered callers wait too long",
+   "metric": {
+    "d": "35.8%",
+    "v": 35.8,
+    "prov": "real"
+   },
+   "metric_label": "of answered calls waited 5+ min",
+   "card": [
+    {
+     "type": "bullet_rows",
+     "unit": "%",
+     "rows": [
+      {
+       "label": "Waited 5+ min",
+       "value": {
+        "d": "35.8%",
+        "v": 35.8,
+        "prov": "real"
+       },
+       "cmp": 10.5,
+       "max": 50,
+       "tone": "crit"
+      },
+      {
+       "label": "Not answered",
+       "value": {
+        "d": "14%",
+        "v": 14,
+        "prov": "illustrative"
+       },
+       "cmp": 7,
+       "max": 50
+      },
+      {
+       "label": "Online requests / 1,000",
+       "value": {
+        "d": "20",
+        "v": 20,
+        "prov": "real"
+       },
+       "cmp": 43,
+       "max": 50,
+       "unit": ""
+      }
+     ]
+    }
+   ],
+   "rank": {
+    "pos": 4,
+    "n": 4
+   },
+   "trend": {
+    "values": [
+     29,
+     31,
+     33,
+     35.8
+    ],
+    "prov": "illustrative"
+   },
+   "patient_voice": {
+    "text": {
+     "d": "38% find it easy to phone · ICB 55%",
+     "v": null,
+     "prov": "illustrative"
+    },
+    "verdict": "confirms"
+   },
+   "l2": {
+    "what": [
+     {
+      "value": {
+       "d": "1,013",
+       "v": null,
+       "prov": "real"
+      },
+      "label": "calls waited 5+ min",
+      "sub": "35.8% of answered · ICB 10.5%"
+     },
+     {
+      "value": {
+       "d": "780",
+       "v": null,
+       "prov": "real"
+      },
+      "label": "calls per 1,000 patients",
+      "sub": "Similar practices 566"
+     },
+     {
+      "value": {
+       "d": "14%",
+       "v": null,
+       "prov": "illustrative"
+      },
+      "label": "calls not answered",
+      "sub": "ICB 7%"
+     },
+     {
+      "value": {
+       "d": "20",
+       "v": null,
+       "prov": "real"
+      },
+      "label": "online requests per 1,000",
+      "sub": "ICB 43"
+     }
+    ],
+    "where": [
+     {
+      "type": "columns",
+      "title": "Long waits by hour",
+      "note": "Share of answered calls waiting 5+ min. Dashed line = ICB.",
+      "unit": "%",
+      "prov": "illustrative",
+      "highlight": [
+       0,
+       1
+      ],
+      "bars": [
+       {
+        "l": "8:00",
+        "v": 62
+       },
+       {
+        "l": "9:00",
+        "v": 51
+       },
+       {
+        "l": "10:00",
+        "v": 38
+       },
+       {
+        "l": "11:00",
+        "v": 30
+       },
+       {
+        "l": "12:00",
+        "v": 24
+       },
+       {
+        "l": "13:00",
+        "v": 22
+       },
+       {
+        "l": "14:00",
+        "v": 27
+       },
+       {
+        "l": "15:00",
+        "v": 29
+       },
+       {
+        "l": "16:00",
+        "v": 25
+       },
+       {
+        "l": "17:00",
+        "v": 18
+       }
+      ],
+      "cmp": {
+       "label": "ICB",
+       "values": [
+        22,
+        18,
+        12,
+        9,
+        8,
+        7,
+        8,
+        9,
+        8,
+        6
+       ]
+      }
+     }
+    ],
+    "investigate": [
+     {
+      "kind": "association",
+      "prov": "real",
+      "text": "Practices with high online use tend to receive fewer calls (479 per 1,000, against 717 for low-use practices). You receive 780 with low online use."
+     },
+     {
+      "kind": "association",
+      "prov": "real",
+      "text": "Across practices, long waits go with patients rating the phone as hard to use (r = −0.52)."
+     },
+     {
+      "kind": "observed",
+      "prov": "illustrative",
+      "text": "8–10am holds most long waits. Check phone staffing in that window."
+     },
+     {
+      "kind": "observed",
+      "prov": "illustrative",
+      "text": "[[120]] callbacks were offered but not completed. Check how incomplete callbacks are followed up."
+     }
+    ],
+    "ai": {
+     "prov": "real",
+     "text": "Telephone waiting is the clearest access pressure. It is concentrated at opening time, sits alongside low online use, and patients report the same difficulty. Nothing here shows the cause; the morning window is the place to start."
+    },
+    "evidence": {
+     "tested_on": "6,076 English practices, July 2026",
+     "associations": [
+      [
+       "Long waits vs ease of phoning (GPPS)",
+       "−0.52"
+      ],
+      [
+       "Unanswered calls vs ease of phoning",
+       "−0.47"
+      ],
+      [
+       "Online use vs call volume",
+       "−0.45"
+      ],
+      [
+       "Online use vs morning peak",
+       "−0.47"
+      ]
+     ],
+     "no_relationship": [
+      [
+       "Reception staff numbers vs phone performance",
+       "−0.001"
+      ],
+      [
+       "Busiest-hour depth vs experience",
+       "+0.009"
+      ],
+      [
+       "Monday effect",
+       "−0.12"
+      ]
+     ],
+     "sources": [
+      "Cloud-based telephony data (NHS England), Jul 2026",
+      "Online consultation submissions, Jul 2026",
+      "GP Patient Survey 2026",
+      "Patients registered at a GP practice, Jul 2026"
+     ],
+     "comparators": "Status against ICB. PCN shown as rank (4 practices). England in detailed analysis."
+    }
+   },
+   "l3": {
+    "tabs": [
+     {
+      "id": "time",
+      "label": "Day & time",
+      "blocks": [
+       {
+        "type": "heatmap",
+        "title": "Long waits by weekday and hour",
+        "note": "% of answered calls waiting 5+ min. Grey = too few calls to show.",
+        "prov": "illustrative",
+        "unit": "%",
+        "cols": [
+         "Mon",
+         "Tue",
+         "Wed",
+         "Thu",
+         "Fri"
+        ],
+        "rows": [
+         "08:00",
+         "09:00",
+         "10:00",
+         "11:00",
+         "12:00",
+         "13:00",
+         "14:00",
+         "15:00",
+         "16:00",
+         "17:00"
+        ],
+        "max": 72,
+        "values": [
+         [
+          71,
+          63,
+          58,
+          60,
+          57
+         ],
+         [
+          58,
+          50,
+          47,
+          49,
+          49
+         ],
+         [
+          41,
+          37,
+          36,
+          38,
+          39
+         ],
+         [
+          33,
+          29,
+          28,
+          30,
+          31
+         ],
+         [
+          26,
+          23,
+          22,
+          24,
+          25
+         ],
+         [
+          24,
+          21,
+          20,
+          22,
+          null
+         ],
+         [
+          30,
+          26,
+          25,
+          27,
+          28
+         ],
+         [
+          32,
+          28,
+          27,
+          29,
+          30
+         ],
+         [
+          27,
+          24,
+          23,
+          25,
+          26
+         ],
+         [
+          20,
+          17,
+          null,
+          18,
+          null
+         ]
+        ]
+       }
+      ]
+     },
+     {
+      "id": "outcomes",
+      "label": "Call outcomes",
+      "blocks": [
+       {
+        "type": "outcomes",
+        "title": "What happened to calls in July",
+        "note": "Outcomes are not additive: a caller can hang up and be offered a callback.",
+        "prov": "mixed",
+        "steps": [
+         {
+          "l": "Calls received",
+          "v": 5310,
+          "p": "100%",
+          "prov": "real"
+         },
+         {
+          "l": "Answered",
+          "v": 4570,
+          "p": "86%",
+          "prov": "illustrative"
+         },
+         {
+          "l": "Hung up before queue",
+          "v": 265,
+          "p": "5%",
+          "tone": "crit",
+          "prov": "illustrative"
+         },
+         {
+          "l": "Hung up while waiting",
+          "v": 475,
+          "p": "9%",
+          "tone": "crit",
+          "prov": "illustrative"
+         },
+         {
+          "l": "Callback offered",
+          "v": 410,
+          "p": "8%",
+          "prov": "illustrative"
+         },
+         {
+          "l": "Callback completed",
+          "v": 290,
+          "p": "71% of offered",
+          "tone": "warn",
+          "prov": "illustrative"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "trend",
+      "label": "Trend",
+      "blocks": [
+       {
+        "type": "lines",
+        "title": "Long waits and call volume",
+        "note": "Indexed, April = 100. Each line on its own base.",
+        "labels": [
+         "Apr",
+         "May",
+         "Jun",
+         "Jul"
+        ],
+        "prov": "illustrative",
+        "series": [
+         {
+          "name": "Waited 5+ min",
+          "values": [
+           100,
+           107,
+           114,
+           123
+          ],
+          "tone": "crit"
+         },
+         {
+          "name": "Calls / 1,000",
+          "values": [
+           100,
+           102,
+           105,
+           109
+          ],
+          "tone": "practice"
+         },
+         {
+          "name": "Online / 1,000",
+          "values": [
+           100,
+           99,
+           101,
+           100
+          ],
+          "tone": "cmp"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "compare",
+      "label": "PCN · ICB · England",
+      "blocks": [
+       {
+        "type": "table",
+        "title": "Compared with peers",
+        "columns": [
+         "Measure",
+         "You",
+         "PCN rank",
+         "ICB",
+         "England"
+        ],
+        "rows": [
+         [
+          "Waited 5+ min",
+          {
+           "d": "35.8%",
+           "v": null,
+           "prov": "real"
+          },
+          {
+           "d": "4 of 4",
+           "v": null,
+           "prov": "real"
+          },
+          {
+           "d": "10.5%",
+           "v": null,
+           "prov": "real"
+          },
+          {
+           "d": "12.8%",
+           "v": null,
+           "prov": "illustrative"
+          }
+         ],
+         [
+          "Calls per 1,000",
+          {
+           "d": "780",
+           "v": null,
+           "prov": "real"
+          },
+          {
+           "d": "4 of 4",
+           "v": null,
+           "prov": "real"
+          },
+          {
+           "d": "610",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "598",
+           "v": null,
+           "prov": "illustrative"
+          }
+         ],
+         [
+          "Hung up while waiting",
+          {
+           "d": "9%",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "4 of 4",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "4%",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "5%",
+           "v": null,
+           "prov": "illustrative"
+          }
+         ],
+         [
+          "Callbacks completed",
+          {
+           "d": "71%",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "3 of 4",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "84%",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "83%",
+           "v": null,
+           "prov": "illustrative"
+          }
+         ]
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "appointments": {
+   "group": "access",
+   "title": "Appointment access",
+   "question": "Are patients getting appropriate care quickly enough?",
+   "status": "watch",
+   "assurance": "national_ambition",
+   "priority": 0.55,
+   "headline": "Routine waits compare well; urgent same-day is below the 90% ambition",
+   "metric": {
+    "d": "84%",
+    "v": 84,
+    "prov": "illustrative"
+   },
+   "metric_label": "of clinically urgent requests dealt with same day",
+   "card": [
+    {
+     "type": "bullet_rows",
+     "unit": "%",
+     "rows": [
+      {
+       "label": "Urgent same day",
+       "value": {
+        "d": "84%",
+        "v": 84,
+        "prov": "illustrative"
+       },
+       "cmp": 91,
+       "target": 90,
+       "max": 100,
+       "tone": "warn"
+      },
+      {
+       "label": "Routine ≤ 14 days",
+       "value": {
+        "d": "89%",
+        "v": 89,
+        "prov": "illustrative"
+       },
+       "cmp": 81,
+       "max": 100,
+       "tone": "good"
+      }
+     ]
+    }
+   ],
+   "rank": {
+    "pos": 2,
+    "n": 4
+   },
+   "trend": {
+    "values": [
+     89,
+     87,
+     84
+    ],
+    "prov": "illustrative"
+   },
+   "patient_voice": {
+    "text": {
+     "d": "81% happy with time offered · ICB 77%",
+     "v": null,
+     "prov": "illustrative"
+    },
+    "verdict": "consistent"
+   },
+   "l2": {
+    "what": [
+     {
+      "value": {
+       "d": "84%",
+       "v": null,
+       "prov": "illustrative"
+      },
+      "label": "urgent dealt with same day",
+      "sub": "National ambition 90%"
+     },
+     {
+      "value": {
+       "d": "89%",
+       "v": null,
+       "prov": "illustrative"
+      },
+      "label": "routine within 14 days",
+      "sub": "ICB 81%"
+     },
+     {
+      "value": {
+       "d": "21%",
+       "v": null,
+       "prov": "illustrative"
+      },
+      "label": "requests coded urgent",
+      "sub": "ICB 23%"
+     }
+    ],
+    "where": [
+     {
+      "type": "hbars",
+      "title": "Median wait for a routine appointment",
+      "note": "Grey tick = ICB.",
+      "unit": " days",
+      "max": 12,
+      "prov": "illustrative",
+      "rows": [
+       {
+        "l": "GP",
+        "v": 9,
+        "c": 7
+       },
+       {
+        "l": "Nurse / other staff",
+        "v": 4,
+        "c": 5
+       }
+      ]
+     }
+    ],
+    "investigate": [
+     {
+      "kind": "observed",
+      "prov": "illustrative",
+      "text": "Urgent same-day fell while total appointments rose. Check whether urgent capacity grew with demand."
+     },
+     {
+      "kind": "observed",
+      "prov": "illustrative",
+      "text": "GP routine waits are longer than the ICB; other staff are faster. The gap is GP-specific."
+     }
+    ],
+    "ai": {
+     "prov": "illustrative",
+     "text": "Routine access is a relative strength. The urgent same-day rate is the measure to confirm first, because it sits against a national ambition."
+    },
+    "evidence": {
+     "tested_on": "6,076 English practices, July 2026",
+     "associations": [
+      [
+       "Urgent coding share vs ICB",
+       "Within range"
+      ]
+     ],
+     "no_relationship": [
+      [
+       "Booking wait vs survey wait complaint",
+       "+0.16"
+      ]
+     ],
+     "sources": [
+      "Appointments in General Practice (GPAD), Jul 2026",
+      "2026/27 GP contract access requirements"
+     ],
+     "comparators": "Status against the national ambition where one exists, otherwise ICB."
+    }
+   },
+   "l3": {
+    "tabs": [
+     {
+      "id": "delivery",
+      "label": "Delivery",
+      "blocks": [
+       {
+        "type": "hbars",
+        "title": "How appointments were delivered",
+        "note": "Grey tick = ICB.",
+        "unit": "%",
+        "max": 80,
+        "prov": "illustrative",
+        "rows": [
+         {
+          "l": "Face to face",
+          "v": 61,
+          "c": 66
+         },
+         {
+          "l": "Telephone",
+          "v": 34,
+          "c": 29
+         },
+         {
+          "l": "Video / online",
+          "v": 3,
+          "c": 3
+         },
+         {
+          "l": "Home visit",
+          "v": 2,
+          "c": 2
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "staff",
+      "label": "Staff & lead time",
+      "blocks": [
+       {
+        "type": "table",
+        "title": "Appointments by staff type and time from booking",
+        "note": "Shown only if national data gives this breakdown per practice. To confirm.",
+        "columns": [
+         "Booked",
+         "GP",
+         "Other staff"
+        ],
+        "rows": [
+         [
+          "Same day",
+          {
+           "d": "1,120",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "840",
+           "v": null,
+           "prov": "illustrative"
+          }
+         ],
+         [
+          "Next day",
+          {
+           "d": "310",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "260",
+           "v": null,
+           "prov": "illustrative"
+          }
+         ],
+         [
+          "2–7 days",
+          {
+           "d": "520",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "480",
+           "v": null,
+           "prov": "illustrative"
+          }
+         ],
+         [
+          "8–28 days",
+          {
+           "d": "690",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "510",
+           "v": null,
+           "prov": "illustrative"
+          }
+         ],
+         [
+          "28+ days",
+          {
+           "d": "140",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "230",
+           "v": null,
+           "prov": "illustrative"
+          }
+         ]
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "workforce": {
+   "group": "capacity",
+   "title": "Workforce & capacity",
+   "question": "Is our capacity keeping pace with population and workload?",
+   "status": "watch",
+   "assurance": "benchmark",
+   "priority": 0.5,
+   "headline": "Appointment activity is rising faster than GP capacity",
+   "metric": {
+    "d": "2,196",
+    "v": 2196,
+    "prov": "illustrative"
+   },
+   "metric_label": "patients per GP FTE · ICB 1,980",
+   "card": [
+    {
+     "type": "lines",
+     "labels": [
+      "May",
+      "Jun",
+      "Jul"
+     ],
+     "prov": "mixed",
+     "compact": true,
+     "note": "Indexed, May = 100",
+     "series": [
+      {
+       "name": "Appointments",
+       "values": [
+        100,
+        111,
+        125
+       ],
+       "tone": "practice",
+       "prov": "real"
+      },
+      {
+       "name": "GP FTE",
+       "values": [
+        100,
+        100,
+        99
+       ],
+       "tone": "accent",
+       "prov": "illustrative"
+      },
+      {
+       "name": "Patients",
+       "values": [
+        100,
+        100.2,
+        100.4
+       ],
+       "tone": "cmp",
+       "prov": "illustrative"
+      }
+     ]
+    }
+   ],
+   "rank": {
+    "pos": 3,
+    "n": 4
+   },
+   "l2": {
+    "what": [
+     {
+      "value": {
+       "d": "2,196",
+       "v": null,
+       "prov": "illustrative"
+      },
+      "label": "patients per GP FTE",
+      "sub": "ICB 1,980"
+     },
+     {
+      "value": {
+       "d": "3.1",
+       "v": null,
+       "prov": "illustrative"
+      },
+      "label": "GP FTE",
+      "sub": "Excluding trainees"
+     },
+     {
+      "value": {
+       "d": "▲ 25%",
+       "v": null,
+       "prov": "real"
+      },
+      "label": "appointments since May",
+      "sub": "GP FTE broadly flat"
+     },
+     {
+      "value": {
+       "d": "6,807",
+       "v": null,
+       "prov": "real"
+      },
+      "label": "registered patients",
+      "sub": "▲0.4% on June"
+     }
+    ],
+    "where": [
+     {
+      "type": "hbars",
+      "title": "Current workforce",
+      "note": "FTE. Grey tick = ICB practice of the same list size.",
+      "unit": "",
+      "max": 7,
+      "prov": "illustrative",
+      "rows": [
+       {
+        "l": "GP",
+        "v": 3.1,
+        "c": 3.4
+       },
+       {
+        "l": "Nurse",
+        "v": 2.4,
+        "c": 2.2
+       },
+       {
+        "l": "Admin",
+        "v": 6.2,
+        "c": 5.8
+       }
+      ]
+     }
+    ],
+    "investigate": [
+     {
+      "kind": "observed",
+      "prov": "real",
+      "text": "Appointments rose 25% in two months. Check first whether this is a real change or a change in how appointments are recorded."
+     },
+     {
+      "kind": "observed",
+      "prov": "illustrative",
+      "text": "If real, check which staff groups and appointment modes absorbed the increase."
+     },
+     {
+      "kind": "observed",
+      "prov": "illustrative",
+      "text": "List growth is small month to month; assess it over 6–12 months alongside workforce."
+     }
+    ],
+    "ai": {
+     "prov": "illustrative",
+     "text": "Activity is outpacing GP capacity on paper, but the size of the jump needs verifying before it is treated as a pressure."
+    },
+    "evidence": {
+     "tested_on": "6,076 English practices, July 2026",
+     "associations": [],
+     "no_relationship": [
+      [
+       "Staffing level vs access performance",
+       "Not established"
+      ]
+     ],
+     "sources": [
+      "General Practice Workforce (NHS Digital)",
+      "Patients registered at a GP practice",
+      "GPAD, May–Jul 2026"
+     ],
+     "comparators": "ICB. Workforce denominator (GP FTE definition) still to be confirmed."
+    }
+   },
+   "l3": {
+    "tabs": [
+     {
+      "id": "trend",
+      "label": "Trends",
+      "blocks": [
+       {
+        "type": "lines",
+        "title": "Six-month workforce, population and activity",
+        "note": "Indexed, February = 100.",
+        "labels": [
+         "Feb",
+         "Mar",
+         "Apr",
+         "May",
+         "Jun",
+         "Jul"
+        ],
+        "prov": "mixed",
+        "series": [
+         {
+          "name": "Appointments",
+          "values": [
+           100,
+           103,
+           107,
+           111,
+           118,
+           125
+          ],
+          "tone": "practice",
+          "prov": "real"
+         },
+         {
+          "name": "Patients",
+          "values": [
+           100,
+           100.2,
+           100.4,
+           100.5,
+           100.8,
+           101.0
+          ],
+          "tone": "cmp",
+          "prov": "illustrative"
+         },
+         {
+          "name": "GP FTE",
+          "values": [
+           100,
+           100,
+           99.8,
+           100,
+           99.5,
+           99
+          ],
+          "tone": "accent",
+          "prov": "illustrative"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "compare",
+      "label": "Comparators",
+      "blocks": [
+       {
+        "type": "table",
+        "title": "Capacity compared",
+        "columns": [
+         "Measure",
+         "You",
+         "PCN",
+         "ICB",
+         "England"
+        ],
+        "rows": [
+         [
+          "Patients per GP FTE",
+          {
+           "d": "2,196",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "2,040",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "1,980",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "1,930",
+           "v": null,
+           "prov": "illustrative"
+          }
+         ],
+         [
+          "Appointments per 1,000",
+          {
+           "d": "512",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "458",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "430",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "445",
+           "v": null,
+           "prov": "illustrative"
+          }
+         ]
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "missed": {
+   "group": "capacity",
+   "title": "Missed appointments",
+   "question": "Where are we losing usable appointment capacity?",
+   "status": "watch",
+   "assurance": "benchmark",
+   "priority": 0.45,
+   "headline": "Missed appointments cluster in bookings made further ahead",
+   "metric": {
+    "d": "7.5%",
+    "v": 7.5,
+    "prov": "real"
+   },
+   "metric_label": "of appointments missed in July · 9.4% in May",
+   "card": [
+    {
+     "type": "columns",
+     "unit": "%",
+     "prov": "real",
+     "compact": true,
+     "title": "Missed, by time from booking",
+     "bars": [
+      {
+       "l": "Same day",
+       "v": 1.8
+      },
+      {
+       "l": "Next day",
+       "v": 3.9
+      },
+      {
+       "l": "2–7 d",
+       "v": 6.1
+      },
+      {
+       "l": "8–28 d",
+       "v": 7.4
+      },
+      {
+       "l": "28+ d",
+       "v": 8.9
+      }
+     ]
+    }
+   ],
+   "rank": {
+    "pos": 3,
+    "n": 4
+   },
+   "trend": {
+    "values": [
+     9.4,
+     7.6,
+     7.5
+    ],
+    "prov": "real"
+   },
+   "l2": {
+    "what": [
+     {
+      "value": {
+       "d": "7.5%",
+       "v": null,
+       "prov": "real"
+      },
+      "label": "missed in July",
+      "sub": "9.4% in May"
+     },
+     {
+      "value": {
+       "d": "240",
+       "v": null,
+       "prov": "real"
+      },
+      "label": "missed appointments",
+      "sub": "July"
+     },
+     {
+      "value": {
+       "d": "8.9%",
+       "v": null,
+       "prov": "real"
+      },
+      "label": "missed when booked 28+ days ahead",
+      "sub": "Highest band"
+     }
+    ],
+    "where": [
+     {
+      "type": "columns",
+      "title": "Missed, by time from booking",
+      "unit": "%",
+      "prov": "real",
+      "bars": [
+       {
+        "l": "Same day",
+        "v": 1.8
+       },
+       {
+        "l": "Next day",
+        "v": 3.9
+       },
+       {
+        "l": "2–7 days",
+        "v": 6.1
+       },
+       {
+        "l": "8–28 days",
+        "v": 7.4
+       },
+       {
+        "l": "28+ days",
+        "v": 8.9
+       }
+      ]
+     }
+    ],
+    "investigate": [
+     {
+      "kind": "observed",
+      "prov": "real",
+      "text": "The further ahead an appointment is booked, the more often it is missed. Check reminders and confirmation for bookings 8+ days out."
+     },
+     {
+      "kind": "observed",
+      "prov": "real",
+      "text": "The rate has improved since May. Keep what changed while investigating the rest."
+     }
+    ],
+    "ai": {
+     "prov": "real",
+     "text": "Missed appointments are improving, and the remaining loss is concentrated in long-lead bookings, which is where reminders act."
+    },
+    "evidence": {
+     "tested_on": "6,076 English practices, July 2026",
+     "associations": [
+      [
+       "Booking distance vs missed rate",
+       "1.8% → 8.9%"
+      ]
+     ],
+     "no_relationship": [
+      [
+       "Access measures vs missed rate",
+       "No clear relationship"
+      ]
+     ],
+     "sources": [
+      "GPAD appointment status by time between booking and appointment, Jul 2026"
+     ],
+     "comparators": "ICB and own trend."
+    }
+   },
+   "l3": {
+    "tabs": [
+     {
+      "id": "trend",
+      "label": "Trend",
+      "blocks": [
+       {
+        "type": "lines",
+        "title": "Missed rate",
+        "note": "% of appointments.",
+        "labels": [
+         "May",
+         "Jun",
+         "Jul"
+        ],
+        "prov": "mixed",
+        "absolute": true,
+        "unit": "%",
+        "series": [
+         {
+          "name": "You",
+          "values": [
+           9.4,
+           7.6,
+           7.5
+          ],
+          "tone": "practice",
+          "prov": "real"
+         },
+         {
+          "name": "ICB",
+          "values": [
+           7.1,
+           7.0,
+           6.9
+          ],
+          "tone": "cmp",
+          "prov": "illustrative"
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "lead",
+      "label": "Lead time",
+      "blocks": [
+       {
+        "type": "hbars",
+        "title": "Missed by time from booking",
+        "note": "Grey tick = ICB.",
+        "unit": "%",
+        "max": 10,
+        "prov": "mixed",
+        "rows": [
+         {
+          "l": "Same day",
+          "v": 1.8,
+          "c": 1.7
+         },
+         {
+          "l": "Next day",
+          "v": 3.9,
+          "c": 3.5
+         },
+         {
+          "l": "2–7 days",
+          "v": 6.1,
+          "c": 5.6
+         },
+         {
+          "l": "8–28 days",
+          "v": 7.4,
+          "c": 6.8
+         },
+         {
+          "l": "28+ days",
+          "v": 8.9,
+          "c": 8.0
+         }
+        ],
+        "cmp_prov": "illustrative"
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "qof": {
+   "group": "quality",
+   "title": "QOF & income opportunity",
+   "question": "Where are we leaving QOF achievement and income on the table?",
+   "status": "attention",
+   "assurance": "qof_threshold",
+   "priority": 0.7,
+   "headline": "Most unachieved QOF points are in childhood immunisations",
+   "metric": {
+    "d": "75.2",
+    "v": 75.2,
+    "prov": "real"
+   },
+   "metric_label": "QOF points not achieved · 86.7% achieved (2025/26)",
+   "card": [
+    {
+     "type": "bullet_rows",
+     "unit": " pts",
+     "rows": [
+      {
+       "label": "Childhood imms",
+       "value": {
+        "d": "54 pts",
+        "v": 54,
+        "prov": "real"
+       },
+       "max": 60,
+       "tone": "crit"
+      },
+      {
+       "label": "Cervical screening",
+       "value": {
+        "d": "9.1 pts",
+        "v": 9.1,
+        "prov": "illustrative"
+       },
+       "max": 60
+      },
+      {
+       "label": "Blood pressure",
+       "value": {
+        "d": "6.4 pts",
+        "v": 6.4,
+        "prov": "illustrative"
+       },
+       "max": 60
+      }
+     ]
+    }
+   ],
+   "rank": {
+    "pos": 3,
+    "n": 4
+   },
+   "trend": {
+    "values": [
+     88.9,
+     87.4,
+     86.7
+    ],
+    "prov": "illustrative"
+   },
+   "l2": {
+    "what": [
+     {
+      "value": {
+       "d": "86.7%",
+       "v": null,
+       "prov": "real"
+      },
+      "label": "points achieved",
+      "sub": "Similar practices [[91%]]"
+     },
+     {
+      "value": {
+       "d": "75.2",
+       "v": null,
+       "prov": "real"
+      },
+      "label": "points not achieved",
+      "sub": "54 in immunisations"
+     },
+     {
+      "value": {
+       "d": "▼ 2.2",
+       "v": null,
+       "prov": "illustrative"
+      },
+      "label": "points vs last year",
+      "sub": "Like-for-like indicators"
+     }
+    ],
+    "where": [
+     {
+      "type": "hbars",
+      "title": "Distance to the upper threshold",
+      "note": "Black line = QOF upper threshold. Points at stake on the right.",
+      "unit": "%",
+      "max": 100,
+      "prov": "illustrative",
+      "rows": [
+       {
+        "l": "MMR at 2 years",
+        "v": 71,
+        "t": 95,
+        "lab": "71% · 18 pts"
+       },
+       {
+        "l": "MMR at 5 years",
+        "v": 69,
+        "t": 95,
+        "lab": "69% · 18 pts"
+       },
+       {
+        "l": "8 weeks – 1 year",
+        "v": 78,
+        "t": 95,
+        "lab": "78% · 18 pts"
+       },
+       {
+        "l": "Cervical 25–49",
+        "v": 62,
+        "t": 80,
+        "lab": "62% · 5.8 pts"
+       }
+      ]
+     }
+    ],
+    "investigate": [
+     {
+      "kind": "observed",
+      "prov": "real",
+      "text": "Childhood immunisations account for 54 of the 75 points not achieved."
+     },
+     {
+      "kind": "observed",
+      "prov": "illustrative",
+      "text": "In 2026/27 the improvement route pays [[31 of 54]] points here against [[14]] on the standard thresholds."
+     },
+     {
+      "kind": "observed",
+      "prov": "real",
+      "text": "For each gap, check 'not done' against 'exception reported'. They need different fixes."
+     },
+     {
+      "kind": "association",
+      "prov": "real",
+      "text": "Deprivation and age both move QOF scores, so the comparison is with similar practices, not the ICB average."
+     }
+    ],
+    "ai": {
+     "prov": "real",
+     "text": "QOF opportunity is concentrated rather than spread: one domain holds most of the missing points, which makes it a focused piece of work."
+    },
+    "evidence": {
+     "tested_on": "6,076 English practices, 2025/26",
+     "associations": [
+      [
+       "Deprivation vs QOF achievement",
+       "−0.29"
+      ],
+      [
+       "Older population vs QOF achievement",
+       "+0.29"
+      ]
+     ],
+     "no_relationship": [
+      [
+       "Call handling vs QOF",
+       "−0.08"
+      ]
+     ],
+     "sources": [
+      "QOF 2025/26 achievement (NHS Digital)",
+      "QOF 2026/27 guidance"
+     ],
+     "comparators": "Similar practices (peer group definition to be finalised). Annual data: describes the closed year."
+    }
+   },
+   "l3": {
+    "tabs": [
+     {
+      "id": "indicators",
+      "label": "Indicators",
+      "blocks": [
+       {
+        "type": "table",
+        "title": "Indicators with the most points to recover",
+        "note": "Immunisation total (54 pts) is real; the split by indicator is a placeholder.",
+        "columns": [
+         "Indicator",
+         "Achieved",
+         "Upper threshold",
+         "Exceptions",
+         "Points lost",
+         "England"
+        ],
+        "rows": [
+         [
+          "MMR at 2 (VI002)",
+          {
+           "d": "71%",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "95%",
+           "v": null,
+           "prov": "real"
+          },
+          {
+           "d": "1%",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "18.0",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "88%",
+           "v": null,
+           "prov": "illustrative"
+          }
+         ],
+         [
+          "MMR at 5 (VI003)",
+          {
+           "d": "69%",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "95%",
+           "v": null,
+           "prov": "real"
+          },
+          {
+           "d": "1%",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "18.0",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "85%",
+           "v": null,
+           "prov": "illustrative"
+          }
+         ],
+         [
+          "8 wks–1 yr (VI001)",
+          {
+           "d": "78%",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "95%",
+           "v": null,
+           "prov": "real"
+          },
+          {
+           "d": "2%",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "18.0",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "91%",
+           "v": null,
+           "prov": "illustrative"
+          }
+         ],
+         [
+          "Cervical 25–49",
+          {
+           "d": "62%",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "80%",
+           "v": null,
+           "prov": "real"
+          },
+          {
+           "d": "4%",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "5.8",
+           "v": null,
+           "prov": "illustrative"
+          },
+          {
+           "d": "72%",
+           "v": null,
+           "prov": "illustrative"
+          }
+         ]
+        ]
+       }
+      ]
+     },
+     {
+      "id": "route",
+      "label": "Improvement route",
+      "blocks": [
+       {
+        "type": "hbars",
+        "title": "Immunisations: two ways to earn points in 2026/27",
+        "unit": " pts",
+        "max": 54,
+        "prov": "illustrative",
+        "rows": [
+         {
+          "l": "Standard thresholds",
+          "v": 14,
+          "lab": "14 of 54 pts"
+         },
+         {
+          "l": "Improve on own 2-yr baseline",
+          "v": 31,
+          "tone": "good",
+          "lab": "31 of 54 pts"
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "experience": {
+   "group": "quality",
+   "title": "Patient experience",
+   "question": "What are patients telling us, and does it match the operational evidence?",
+   "status": "watch",
+   "assurance": "benchmark",
+   "priority": 0.4,
+   "headline": "Patients confirm the phone problem; appointment times are rated well",
+   "metric": {
+    "d": "38%",
+    "v": 38,
+    "prov": "illustrative"
+   },
+   "metric_label": "find it easy to contact the practice by phone",
+   "card": [
+    {
+     "type": "bullet_rows",
+     "unit": "%",
+     "rows": [
+      {
+       "label": "Easy to phone",
+       "value": {
+        "d": "38%",
+        "v": 38,
+        "prov": "illustrative"
+       },
+       "cmp": 55,
+       "max": 100,
+       "tone": "crit"
+      },
+      {
+       "label": "Happy with time",
+       "value": {
+        "d": "81%",
+        "v": 81,
+        "prov": "illustrative"
+       },
+       "cmp": 77,
+       "max": 100,
+       "tone": "good"
+      },
+      {
+       "label": "Good overall",
+       "value": {
+        "d": "72%",
+        "v": 72,
+        "prov": "illustrative"
+       },
+       "cmp": 76,
+       "max": 100
+      }
+     ]
+    }
+   ],
+   "rank": {
+    "pos": 3,
+    "n": 4
+   },
+   "l2": {
+    "what": [
+     {
+      "value": {
+       "d": "38%",
+       "v": null,
+       "prov": "illustrative"
+      },
+      "label": "find it easy to phone",
+      "sub": "ICB 55%"
+     },
+     {
+      "value": {
+       "d": "81%",
+       "v": null,
+       "prov": "illustrative"
+      },
+      "label": "happy with appointment time",
+      "sub": "ICB 77%"
+     },
+     {
+      "value": {
+       "d": "72%",
+       "v": null,
+       "prov": "illustrative"
+      },
+      "label": "good overall experience",
+      "sub": "ICB 76%"
+     }
+    ],
+    "where": [
+     {
+      "type": "paired",
+      "title": "What patients say against what the data shows",
+      "prov": "illustrative",
+      "rows": [
+       {
+        "patient": "38% find it easy to phone",
+        "operational": "35.8% of answered calls wait 5+ min",
+        "verdict": "confirms",
+        "area": "contact"
+       },
+       {
+        "patient": "81% happy with appointment time",
+        "operational": "89% of routine seen within 14 days",
+        "verdict": "consistent",
+        "area": "appointments"
+       }
+      ]
+     }
+    ],
+    "investigate": [
+     {
+      "kind": "observed",
+      "prov": "illustrative",
+      "text": "Patient feedback supports the telephone finding rather than contradicting it."
+     },
+     {
+      "kind": "observed",
+      "prov": "illustrative",
+      "text": "Satisfaction with appointment times is strong despite the urgent same-day signal."
+     }
+    ],
+    "ai": {
+     "prov": "illustrative",
+     "text": "Patients and the operational data tell the same story about the phones, which makes that finding stronger."
+    },
+    "evidence": {
+     "tested_on": "6,076 English practices, GPPS 2026",
+     "associations": [
+      [
+       "Long waits vs ease of phoning",
+       "−0.52"
+      ]
+     ],
+     "no_relationship": [
+      [
+       "Routine wait vs time satisfaction",
+       "No clear contradiction"
+      ]
+     ],
+     "sources": [
+      "GP Patient Survey 2026 (fieldwork Jan–Mar)"
+     ],
+     "comparators": "ICB. Survey is annual, so it lags the operational data."
+    }
+   },
+   "l3": {
+    "tabs": [
+     {
+      "id": "dims",
+      "label": "Dimensions",
+      "blocks": [
+       {
+        "type": "hbars",
+        "title": "Patient experience",
+        "note": "Grey tick = ICB.",
+        "unit": "%",
+        "max": 100,
+        "prov": "illustrative",
+        "rows": [
+         {
+          "l": "Easy to phone",
+          "v": 38,
+          "c": 55,
+          "tone": "crit"
+         },
+         {
+          "l": "Helpful reception",
+          "v": 79,
+          "c": 81
+         },
+         {
+          "l": "Choice of time",
+          "v": 71,
+          "c": 69
+         },
+         {
+          "l": "Satisfied with time",
+          "v": 81,
+          "c": 77
+         },
+         {
+          "l": "Overall experience",
+          "v": 72,
+          "c": 76
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  "prevention": {
+   "group": "prevention",
+   "title": "Prevention & population health",
+   "question": "Where are patients potentially missing preventive or ongoing care?",
+   "status": "in_development",
+   "assurance": "benchmark",
+   "priority": 0,
+   "wide": true,
+   "headline": "Register gaps, screening and vaccination — in development",
+   "dev_note": "This area goes live once the expected-prevalence method has been validated. Until then it shows no numbers.",
+   "planned": [
+    "Disease registers against what the population's age and deprivation would predict",
+    "Screening and vaccination coverage against thresholds and peers",
+    "Registers growing while related QOF achievement falls"
+   ]
+  }
+ },
+ "qa": [
+  {
+   "level": "error",
+   "area": "contact",
+   "text": "1,013 calls waiting 5+ min at 35.8% implies about 2,830 answered calls; the call outcomes show 4,570 (86%). The denominators disagree."
+  },
+  {
+   "level": "error",
+   "area": "missed",
+   "text": "Practice missed-rate by lead time (1.8 → 8.9%) is identical to the England column in v8. Check the source mapping."
+  },
+  {
+   "level": "warn",
+   "area": "workforce",
+   "text": "Appointments +25% in two months with nearby practices flat. Rule out a recording change before headlining."
+  },
+  {
+   "level": "warn",
+   "area": "prevention",
+   "text": "Expected-prevalence gaps summed across registers double-count patients. Held back until the method is validated."
+  },
+  {
+   "level": "info",
+   "area": null,
+   "text": "Trend windows are 3 months. What Changed uses July vs May until 6+ months are loaded."
+  }
+ ],
+ "footer": {
+  "sources": "NHS England GP appointments data, cloud-based telephony, online consultation submissions, GP workforce, patient registrations, QOF, GP Patient Survey, English indices of deprivation.",
+  "licence": "Contains public sector information licensed under the Open Government Licence v3.0."
+ }
+}

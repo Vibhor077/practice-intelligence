@@ -1,0 +1,19 @@
+# data never goes in git — it lives in ../pi-data (PI_DATA_DIR)
+data/
+*.parquet
+*.duckdb
+*.duckdb.wal
+*.zip
+*.xlsx
+*.csv
+!tests/fixtures/**/*.csv
+# build output
+dist/
+# python / node / env
+__pycache__/
+.venv/
+node_modules/
+.next/
+.env
+.env.*
+.DS_Store

@@ -1,4 +1,4 @@
-PY ?= python3
+PY ?= uv run python
 PAYLOAD ?= payloads/demo-kilburn-park.json
 
 .PHONY: fixture lint static all
@@ -10,6 +10,5 @@ lint:
 
 static:
 	$(PY) tools/build_static.py $(PAYLOAD)
-	$(PY) tools/build_static.py $(PAYLOAD) --demo
 
 all: fixture lint static

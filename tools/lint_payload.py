@@ -54,7 +54,7 @@ def lint(p):
 
     # 8. Demo readiness: count illustrative values that would be hidden
     ill = json.dumps(p).count('"prov": "illustrative"')
-    W.append(f"demo: {ill} illustrative elements will be hidden in real-data-only mode") if ill else None
+    W.append(f"fixture: {ill} illustrative elements are never displayed (pipeline payloads must have 0)") if ill else None
     return E, W
 
 if __name__ == "__main__":

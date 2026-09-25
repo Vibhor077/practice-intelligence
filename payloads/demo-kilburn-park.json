@@ -1,9 +1,25 @@
 {
- "schema_version": "0.1.0",
+ "schema_version": "0.2.0",
  "run": {
   "id": "demo-2026-07",
-  "generated_at": "2026-09-23T12:00:00Z",
-  "mode": "fixture"
+  "generated_at": "2026-09-24T12:00:00Z",
+  "mode": "fixture",
+  "versions": {
+   "schema": "0.2.0",
+   "metric_registry": "0.1.0",
+   "ruleset": "0.0.0",
+   "build": "fixture"
+  },
+  "source_releases": [
+   "gpad/2026-07",
+   "cbt/2026-07",
+   "ocs/2026-07",
+   "reg/2026-07",
+   "wf/2026-07",
+   "gpps/2026",
+   "qof/2025-26",
+   "imd/2025"
+  ]
  },
  "practice": {
   "ods_code": "E84000",
@@ -50,11 +66,11 @@
    }
   },
   {
-   "label": "Data period",
+   "label": "Patients per GP",
    "value": {
-    "d": "Jul 2026",
-    "v": null,
-    "prov": "real"
+    "d": "2,196",
+    "v": 2196,
+    "prov": "illustrative"
    }
   }
  ],
@@ -282,9 +298,14 @@
    "question": "Is capacity keeping pace, and where is it being lost?"
   },
   {
+   "id": "clinical",
+   "title": "QOF & income",
+   "question": "Where is QOF achievement and income opportunity concentrated?"
+  },
+  {
    "id": "quality",
-   "title": "Quality & income",
-   "question": "Where is income left on the table, and what do patients say?"
+   "title": "Patient experience",
+   "question": "What are patients telling you, and does it support the operational picture?"
   },
   {
    "id": "prevention",
@@ -499,7 +520,7 @@
       "text": "[[120]] callbacks were offered but not completed. Check how incomplete callbacks are followed up."
      }
     ],
-    "ai": {
+    "interpretation": {
      "prov": "real",
      "text": "Telephone waiting is the clearest access pressure. It is concentrated at opening time, sits alongside low online use, and patients report the same difficulty. Nothing here shows the cause; the morning window is the place to start."
     },
@@ -999,7 +1020,7 @@
       "text": "GP routine waits are longer than the ICB; other staff are faster. The gap is GP-specific."
      }
     ],
-    "ai": {
+    "interpretation": {
      "prov": "illustrative",
      "text": "Routine access is a relative strength. The urgent same-day rate is the measure to confirm first, because it sits against a national ambition."
     },
@@ -1294,7 +1315,7 @@
       "text": "List growth is small month to month; assess it over 6–12 months alongside workforce."
      }
     ],
-    "ai": {
+    "interpretation": {
      "prov": "illustrative",
      "text": "Activity is outpacing GP capacity on paper, but the size of the jump needs verifying before it is treated as a pressure."
     },
@@ -1575,7 +1596,7 @@
       "text": "The rate has improved since May. Keep what changed while investigating the rest."
      }
     ],
-    "ai": {
+    "interpretation": {
      "prov": "real",
      "text": "Missed appointments are improving, and the remaining loss is concentrated in long-lead bookings, which is where reminders act."
     },
@@ -1688,7 +1709,7 @@
    }
   },
   "qof": {
-   "group": "quality",
+   "group": "clinical",
    "title": "QOF & income opportunity",
    "question": "Where are we leaving QOF achievement and income on the table?",
    "status": "attention",
@@ -1837,7 +1858,7 @@
       "text": "Deprivation and age both move QOF scores, so the comparison is with similar practices, not the ICB average."
      }
     ],
-    "ai": {
+    "interpretation": {
      "prov": "real",
      "text": "QOF opportunity is concentrated rather than spread: one domain holds most of the missing points, which makes it a focused piece of work."
     },
@@ -2151,7 +2172,7 @@
       "text": "Satisfaction with appointment times is strong despite the urgent same-day signal."
      }
     ],
-    "ai": {
+    "interpretation": {
      "prov": "illustrative",
      "text": "Patients and the operational data tell the same story about the phones, which makes that finding stronger."
     },
@@ -2225,49 +2246,108 @@
   "prevention": {
    "group": "prevention",
    "title": "Prevention & population health",
-   "question": "Where are patients potentially missing preventive or ongoing care?",
-   "status": "in_development",
+   "question": "Where might preventive or ongoing care need further investigation?",
+   "status": "watch",
    "assurance": "benchmark",
-   "priority": 0,
+   "priority": 0.3,
    "wide": true,
-   "headline": "Register gaps, screening and vaccination — in development",
-   "dev_note": "This area goes live once the expected-prevalence method has been validated. Until then it shows no numbers.",
-   "planned": [
-    "Disease registers against what the population's age and deprivation would predict",
-    "Screening and vaccination coverage against thresholds and peers",
-    "Registers growing while related QOF achievement falls"
-   ]
+   "headline": "Some disease registers may warrant case-finding review against expected need",
+   "metric": {
+    "d": "≈87",
+    "v": 87,
+    "prov": "illustrative"
+   },
+   "metric_label": "modelled register gap · method to validate",
+   "card": [
+    {
+     "type": "bullet_rows",
+     "unit": "",
+     "rows": [
+      {
+       "label": "Hypertension",
+       "value": {
+        "d": "38",
+        "v": 38,
+        "prov": "illustrative"
+       },
+       "max": 45,
+       "tone": "crit"
+      },
+      {
+       "label": "Heart disease",
+       "value": {
+        "d": "22",
+        "v": 22,
+        "prov": "illustrative"
+       },
+       "max": 45,
+       "tone": "crit"
+      },
+      {
+       "label": "AF",
+       "value": {
+        "d": "20",
+        "v": 20,
+        "prov": "illustrative"
+       },
+       "max": 45,
+       "tone": "crit"
+      }
+     ]
+    }
+   ],
+   "l2": {
+    "what": [
+     {
+      "value": {
+       "d": "20",
+       "v": null,
+       "prov": "illustrative"
+      },
+      "label": "AF below expected",
+      "sub": "Model fit 92%"
+     },
+     {
+      "value": {
+       "d": "22",
+       "v": null,
+       "prov": "illustrative"
+      },
+      "label": "heart disease below expected",
+      "sub": "Model fit 77%"
+     },
+     {
+      "value": {
+       "d": "38",
+       "v": null,
+       "prov": "illustrative"
+      },
+      "label": "hypertension below expected",
+      "sub": "Model fit 79%"
+     }
+    ],
+    "where": [],
+    "investigate": [],
+    "interpretation": {
+     "prov": "illustrative",
+     "text": ""
+    },
+    "evidence": {
+     "tested_on": "6,076 English practices",
+     "associations": [],
+     "no_relationship": [],
+     "sources": [
+      "QOF registers 2025/26",
+      "Registered patients by age"
+     ],
+     "comparators": "Expected prevalence for the practice population."
+    }
+   }
   }
  },
- "qa": [
-  {
-   "level": "error",
-   "area": "contact",
-   "text": "1,013 calls waiting 5+ min at 35.8% implies about 2,830 answered calls; the call outcomes show 4,570 (86%). The denominators disagree."
-  },
-  {
-   "level": "error",
-   "area": "missed",
-   "text": "Practice missed-rate by lead time (1.8 → 8.9%) is identical to the England column in v8. Check the source mapping."
-  },
-  {
-   "level": "warn",
-   "area": "workforce",
-   "text": "Appointments +25% in two months with nearby practices flat. Rule out a recording change before headlining."
-  },
-  {
-   "level": "warn",
-   "area": "prevention",
-   "text": "Expected-prevalence gaps summed across registers double-count patients. Held back until the method is validated."
-  },
-  {
-   "level": "info",
-   "area": null,
-   "text": "Trend windows are 3 months. What Changed uses July vs May until 6+ months are loaded."
-  }
- ],
  "footer": {
   "sources": "NHS England GP appointments data, cloud-based telephony, online consultation submissions, GP workforce, patient registrations, QOF, GP Patient Survey, English indices of deprivation.",
-  "licence": "Contains public sector information licensed under the Open Government Licence v3.0."
+  "licence": "Contains public sector information licensed under the Open Government Licence v3.0.",
+  "note": "L1 prioritises. L2 explains. L3 provides detailed analysis. Status is set against the ICB unless a national ambition or QOF threshold applies. PCN is shown as a rank. Links between measures are patterns across practices, not proof of cause."
  }
 }

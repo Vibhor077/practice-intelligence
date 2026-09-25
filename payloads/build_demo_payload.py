@@ -9,7 +9,7 @@ Provenance rules:
   R(...)  -> "real": produced by the July 2026 run
   X(...)  -> "illustrative": placeholder, NEVER shown in demo mode
 Values the v8 prototype marked as real are kept as real, even where QA has flagged them
-(see the `qa` list) -- the flag is the point: the engine must reconcile them before demo.
+-- the renderer shows real values only, so illustrative ones simply do not appear.
 """
 import json, pathlib
 
@@ -17,8 +17,10 @@ def R(d, v=None): return {"d": d, "v": v, "prov": "real"}
 def X(d, v=None): return {"d": d, "v": v, "prov": "illustrative"}
 
 payload = {
-  "schema_version": "0.1.0",
-  "run": {"id": "demo-2026-07", "generated_at": "2026-09-23T12:00:00Z", "mode": "fixture"},
+  "schema_version": "0.2.0",
+  "run": {"id": "demo-2026-07", "generated_at": "2026-09-24T12:00:00Z", "mode": "fixture",
+          "versions": {"schema": "0.2.0", "metric_registry": "0.1.0", "ruleset": "0.0.0", "build": "fixture"},
+          "source_releases": ["gpad/2026-07", "cbt/2026-07", "ocs/2026-07", "reg/2026-07", "wf/2026-07", "gpps/2026", "qof/2025-26", "imd/2025"]},
   "practice": {
     "ods_code": "E84000", "name": "Kilburn Park Medical Centre",
     "icb": "North West London ICB", "pcn": {"name": "Kilburn PCN", "size": 4},
@@ -28,7 +30,7 @@ payload = {
     {"label": "Registered patients", "value": R("6,807", 6807), "delta": X("▲0.4%")},
     {"label": "IMD decile", "value": X("2 / 10", 2), "hint": "1 = most deprived"},
     {"label": "Aged 60+", "value": X("11%", 11)},
-    {"label": "Data period", "value": R("Jul 2026")},
+    {"label": "Patients per GP", "value": X("2,196", 2196)},
   ],
 
   # ---------------------------------------------------------------- L1: executive
@@ -87,7 +89,8 @@ payload = {
   "groups": [
     {"id": "access", "title": "Access", "question": "Can patients reach you, and are they seen in time?"},
     {"id": "capacity", "title": "Capacity & delivery", "question": "Is capacity keeping pace, and where is it being lost?"},
-    {"id": "quality", "title": "Quality & income", "question": "Where is income left on the table, and what do patients say?"},
+    {"id": "clinical", "title": "QOF & income", "question": "Where is QOF achievement and income opportunity concentrated?"},
+    {"id": "quality", "title": "Patient experience", "question": "What are patients telling you, and does it support the operational picture?"},
     {"id": "prevention", "title": "Prevention & population health", "question": "Where might patients be missing preventive or ongoing care?"},
   ],
   "areas": {}
@@ -127,7 +130,7 @@ A["contact"] = {
       {"kind": "observed", "prov": "illustrative", "text": "8–10am holds most long waits. Check phone staffing in that window."},
       {"kind": "observed", "prov": "illustrative", "text": "[[120]] callbacks were offered but not completed. Check how incomplete callbacks are followed up."},
     ],
-    "ai": {"prov": "real", "text": "Telephone waiting is the clearest access pressure. It is concentrated at opening time, sits alongside low online use, and patients report the same difficulty. Nothing here shows the cause; the morning window is the place to start."},
+    "interpretation": {"prov": "real", "text": "Telephone waiting is the clearest access pressure. It is concentrated at opening time, sits alongside low online use, and patients report the same difficulty. Nothing here shows the cause; the morning window is the place to start."},
     "evidence": {
       "tested_on": "6,076 English practices, July 2026",
       "associations": [["Long waits vs ease of phoning (GPPS)", "−0.52"], ["Unanswered calls vs ease of phoning", "−0.47"], ["Online use vs call volume", "−0.45"], ["Online use vs morning peak", "−0.47"]],
@@ -191,7 +194,7 @@ A["appointments"] = {
       {"kind": "observed", "prov": "illustrative", "text": "Urgent same-day fell while total appointments rose. Check whether urgent capacity grew with demand."},
       {"kind": "observed", "prov": "illustrative", "text": "GP routine waits are longer than the ICB; other staff are faster. The gap is GP-specific."},
     ],
-    "ai": {"prov": "illustrative", "text": "Routine access is a relative strength. The urgent same-day rate is the measure to confirm first, because it sits against a national ambition."},
+    "interpretation": {"prov": "illustrative", "text": "Routine access is a relative strength. The urgent same-day rate is the measure to confirm first, because it sits against a national ambition."},
     "evidence": {"tested_on": "6,076 English practices, July 2026",
       "associations": [["Urgent coding share vs ICB", "Within range"]], "no_relationship": [["Booking wait vs survey wait complaint", "+0.16"]],
       "sources": ["Appointments in General Practice (GPAD), Jul 2026", "2026/27 GP contract access requirements"],
@@ -235,7 +238,7 @@ A["workforce"] = {
       {"kind": "observed", "prov": "illustrative", "text": "If real, check which staff groups and appointment modes absorbed the increase."},
       {"kind": "observed", "prov": "illustrative", "text": "List growth is small month to month; assess it over 6–12 months alongside workforce."},
     ],
-    "ai": {"prov": "illustrative", "text": "Activity is outpacing GP capacity on paper, but the size of the jump needs verifying before it is treated as a pressure."},
+    "interpretation": {"prov": "illustrative", "text": "Activity is outpacing GP capacity on paper, but the size of the jump needs verifying before it is treated as a pressure."},
     "evidence": {"tested_on": "6,076 English practices, July 2026",
       "associations": [], "no_relationship": [["Staffing level vs access performance", "Not established"]],
       "sources": ["General Practice Workforce (NHS Digital)", "Patients registered at a GP practice", "GPAD, May–Jul 2026"],
@@ -276,7 +279,7 @@ A["missed"] = {
       {"kind": "observed", "prov": "real", "text": "The further ahead an appointment is booked, the more often it is missed. Check reminders and confirmation for bookings 8+ days out."},
       {"kind": "observed", "prov": "real", "text": "The rate has improved since May. Keep what changed while investigating the rest."},
     ],
-    "ai": {"prov": "real", "text": "Missed appointments are improving, and the remaining loss is concentrated in long-lead bookings, which is where reminders act."},
+    "interpretation": {"prov": "real", "text": "Missed appointments are improving, and the remaining loss is concentrated in long-lead bookings, which is where reminders act."},
     "evidence": {"tested_on": "6,076 English practices, July 2026",
       "associations": [["Booking distance vs missed rate", "1.8% → 8.9%"]], "no_relationship": [["Access measures vs missed rate", "No clear relationship"]],
       "sources": ["GPAD appointment status by time between booking and appointment, Jul 2026"],
@@ -294,7 +297,7 @@ A["missed"] = {
 
 # ---------------------------------------------------------------- QOF
 A["qof"] = {
-  "group": "quality", "title": "QOF & income opportunity", "question": "Where are we leaving QOF achievement and income on the table?",
+  "group": "clinical", "title": "QOF & income opportunity", "question": "Where are we leaving QOF achievement and income on the table?",
   "status": "attention", "assurance": "qof_threshold", "priority": 0.7,
   "headline": "Most unachieved QOF points are in childhood immunisations",
   "metric": R("75.2", 75.2), "metric_label": "QOF points not achieved · 86.7% achieved (2025/26)",
@@ -321,7 +324,7 @@ A["qof"] = {
       {"kind": "observed", "prov": "real", "text": "For each gap, check 'not done' against 'exception reported'. They need different fixes."},
       {"kind": "association", "prov": "real", "text": "Deprivation and age both move QOF scores, so the comparison is with similar practices, not the ICB average."},
     ],
-    "ai": {"prov": "real", "text": "QOF opportunity is concentrated rather than spread: one domain holds most of the missing points, which makes it a focused piece of work."},
+    "interpretation": {"prov": "real", "text": "QOF opportunity is concentrated rather than spread: one domain holds most of the missing points, which makes it a focused piece of work."},
     "evidence": {"tested_on": "6,076 English practices, 2025/26",
       "associations": [["Deprivation vs QOF achievement", "−0.29"], ["Older population vs QOF achievement", "+0.29"]], "no_relationship": [["Call handling vs QOF", "−0.08"]],
       "sources": ["QOF 2025/26 achievement (NHS Digital)", "QOF 2026/27 guidance"],
@@ -368,7 +371,7 @@ A["experience"] = {
       {"kind": "observed", "prov": "illustrative", "text": "Patient feedback supports the telephone finding rather than contradicting it."},
       {"kind": "observed", "prov": "illustrative", "text": "Satisfaction with appointment times is strong despite the urgent same-day signal."},
     ],
-    "ai": {"prov": "illustrative", "text": "Patients and the operational data tell the same story about the phones, which makes that finding stronger."},
+    "interpretation": {"prov": "illustrative", "text": "Patients and the operational data tell the same story about the phones, which makes that finding stronger."},
     "evidence": {"tested_on": "6,076 English practices, GPPS 2026",
       "associations": [["Long waits vs ease of phoning", "−0.52"]], "no_relationship": [["Routine wait vs time satisfaction", "No clear contradiction"]],
       "sources": ["GP Patient Survey 2026 (fieldwork Jan–Mar)"],
@@ -383,26 +386,27 @@ A["experience"] = {
 
 # ---------------------------------------------------------------- Prevention (in development)
 A["prevention"] = {
-  "group": "prevention", "title": "Prevention & population health", "question": "Where are patients potentially missing preventive or ongoing care?",
-  "status": "in_development", "assurance": "benchmark", "priority": 0, "wide": True,
-  "headline": "Register gaps, screening and vaccination — in development",
-  "dev_note": "This area goes live once the expected-prevalence method has been validated. Until then it shows no numbers.",
-  "planned": ["Disease registers against what the population's age and deprivation would predict",
-              "Screening and vaccination coverage against thresholds and peers",
-              "Registers growing while related QOF achievement falls"],
+  "group": "prevention", "title": "Prevention & population health", "question": "Where might preventive or ongoing care need further investigation?",
+  "status": "watch", "assurance": "benchmark", "priority": 0.3, "wide": True,
+  "headline": "Some disease registers may warrant case-finding review against expected need",
+  "metric": X("≈87", 87), "metric_label": "modelled register gap · method to validate",
+  "card": [{"type": "bullet_rows", "unit": "", "rows": [
+      {"label": "Hypertension", "value": X("38", 38), "max": 45, "tone": "crit"},
+      {"label": "Heart disease", "value": X("22", 22), "max": 45, "tone": "crit"},
+      {"label": "AF", "value": X("20", 20), "max": 45, "tone": "crit"}]}],
+  "l2": {
+    "what": [{"value": X("20"), "label": "AF below expected", "sub": "Model fit 92%"},
+             {"value": X("22"), "label": "heart disease below expected", "sub": "Model fit 77%"},
+             {"value": X("38"), "label": "hypertension below expected", "sub": "Model fit 79%"}],
+    "where": [], "investigate": [], "interpretation": {"prov": "illustrative", "text": ""},
+    "evidence": {"tested_on": "6,076 English practices", "associations": [], "no_relationship": [], "sources": ["QOF registers 2025/26", "Registered patients by age"], "comparators": "Expected prevalence for the practice population."}},
 }
 
 # ---------------------------------------------------------------- QA and footer
-payload["qa"] = [
-  {"level": "error", "area": "contact", "text": "1,013 calls waiting 5+ min at 35.8% implies about 2,830 answered calls; the call outcomes show 4,570 (86%). The denominators disagree."},
-  {"level": "error", "area": "missed", "text": "Practice missed-rate by lead time (1.8 → 8.9%) is identical to the England column in v8. Check the source mapping."},
-  {"level": "warn", "area": "workforce", "text": "Appointments +25% in two months with nearby practices flat. Rule out a recording change before headlining."},
-  {"level": "warn", "area": "prevention", "text": "Expected-prevalence gaps summed across registers double-count patients. Held back until the method is validated."},
-  {"level": "info", "area": None, "text": "Trend windows are 3 months. What Changed uses July vs May until 6+ months are loaded."},
-]
 payload["footer"] = {
   "sources": "NHS England GP appointments data, cloud-based telephony, online consultation submissions, GP workforce, patient registrations, QOF, GP Patient Survey, English indices of deprivation.",
   "licence": "Contains public sector information licensed under the Open Government Licence v3.0.",
+  "note": "L1 prioritises. L2 explains. L3 provides detailed analysis. Status is set against the ICB unless a national ambition or QOF threshold applies. PCN is shown as a rank. Links between measures are patterns across practices, not proof of cause.",
 }
 
 out = pathlib.Path(__file__).with_name("demo-kilburn-park.json")

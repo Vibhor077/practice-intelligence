@@ -145,6 +145,8 @@ h1,h2,h3,h4{text-wrap:balance}
 .pv .conf.contradicts{color:var(--crit)}
 .inv-cta{font-size:12px;font-weight:700;color:var(--brand)}
 .reason{font-size:13.5px;color:var(--muted)}
+.base{display:block;width:100%;font-size:11.5px;color:var(--faint);margin-top:2px}
+.fixture-banner{max-width:1320px;margin:0 auto 16px;background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn-bar);border-radius:10px;padding:9px 14px;font-size:13.5px;font-weight:600}
 .footerNote{margin-top:28px;color:var(--faint);font-size:12px;max-width:1040px;line-height:1.55}
 
 /* ================= DRAWER (v8 + L3 domain tabs) ================= */
@@ -214,6 +216,7 @@ svg .ink{fill:var(--ink)}
 </div></header>
 
 <main class="main">
+  <div class="fixture-banner" id="fixtureBanner" role="note" hidden>Design reference. Figures marked illustrative in this fixture are not real practice data.</div>
   <section class="hero" id="hero">
     <div class="summary" id="summary"><div class="eyebrow">✦ AI Practice Assessment</div><ul class="lines" id="assess"></ul></div>
     <button class="focus" id="focus"></button>
@@ -251,33 +254,40 @@ svg .ink{fill:var(--ink)}
 /* =====================================================================
    Practice Intelligence renderer — v8 layout, Palette 2, real data only.
    Reads ONE practice payload (schema/payload.schema.json). No data or NHS logic lives here.
-   Rules:  anything not real is treated as absent (never shown, never zero).
-           area with no real headline         -> hidden (not built yet)
-           area with availability 'no_data'   -> inactive card with reason
-           block / row / tab with no real data -> left out; empty tab disabled
+   Rules:  pipeline mode: anything not real is absent (never shown, never zero).
+           fixture mode (run.mode = "fixture"): illustrative values are shown, with a banner.
+           availability: available -> shown · no_data -> inactive card with reason
+                         unsupported -> hidden · not_built -> hidden (fixture: shown, marked "Not built")
+           block / row / tab with nothing displayable -> left out; empty tab disabled
    ===================================================================== */
 const P=JSON.parse(document.getElementById('pi-payload').textContent);
+const FIXTURE=P.run&&P.run.mode==='fixture';
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const real=x=>x!=null&&!(typeof x==='object'&&x.prov==='illustrative')&&!(typeof x==='string'&&/\[\[/.test(x));
+const real=x=>x!=null&&(FIXTURE||(!(typeof x==='object'&&x.prov==='illustrative')&&!(typeof x==='string'&&/\[\[/.test(x))));
+const ok=p=>FIXTURE||p!=='illustrative';
 const V=x=>real(x)?esc(typeof x==='object'?x.d:x):'<span class="na" title="Not available">–</span>';
-const T=s=>real(s)?esc(s):'';
+const T=s=>real(s)?esc(String(s).replace(/\[\[(.+?)\]\]/g,'$1')):'';
+const base=x=>x&&typeof x==='object'&&x.base?`<span class="base">${esc(x.base)}</span>`:'';
 
-const ST={attention:['p-attention','Attention','▲'],watch:['p-watch','Watch','○'],normal:['p-normal','Normal','–'],good:['p-good','Performing well','✓'],unable:['p-unable','Unable to assess','?']};
+const ST={not_built:['p-unable','Not built yet','◌'],attention:['p-attention','Attention','▲'],watch:['p-watch','Watch','○'],normal:['p-normal','Normal','–'],good:['p-good','Performing well','✓'],unable:['p-unable','Unable to assess','?']};
 const ORD={attention:0,watch:1,normal:2,good:3,unable:4};
 /* The one fixed assurance list. Labels come from here, never from payload copy. */
 const ASSURE={contract_requirement:'Contract requirement',national_ambition:'National ambition',qof_threshold:'QOF threshold',local_expectation:'ICB expectation',benchmark:'Benchmark'};
 const TONE={practice:'var(--practice)',cmp:'var(--cmp)',crit:'var(--crit)',warn:'var(--warn-bar)',good:'var(--good)',accent:'var(--sand)'};
 const pill=s=>`<span class="pill ${ST[s][0]}">${ST[s][2]} ${ST[s][1]}</span>`;
-const std=a=>a?`<span class="std ${a==='benchmark'?'bench':''}">${ASSURE[a]}</span>`:'';
-const rank=r=>r?`<span class="rankdots" data-tip="${r.pos} of ${r.n} in PCN (1 = best)" aria-label="${r.pos} of ${r.n} in PCN">${Array.from({length:r.n},(_,i)=>`<i class="${i===r.pos-1?'me':''}"></i>`).join('')}<span class="num" style="margin-left:4px;color:var(--muted)">${r.pos}/${r.n} PCN</span></span>`:'<span></span>';
+const std=a=>a&&a!=='none'?`<span class="std ${a==='benchmark'?'bench':''}">${ASSURE[a]}</span>`:'';
+const rank=r=>r?`<span class="rankdots" data-tip="Ranked within PCN for this measure" aria-label="${r.pos} of ${r.n} practices in PCN">${Array.from({length:r.n},(_,i)=>`<i class="${i===r.pos-1?'me':''}"></i>`).join('')}<span style="margin-left:4px;color:var(--muted)">${r.pos} of ${r.n} practices</span></span>`:'<span></span>';
 const statusTone=s=>({attention:'crit',watch:'warn',good:'good'}[s]||'practice');
 
 /* ---------------- area state ---------------- */
 function areaState(a){
-  if(a.availability==='no_data')return 'inactive';
-  if(a.status==='in_development'||!real(a.metric))return 'hidden';
-  return 'live'}
+  const av=a.availability||'available';
+  if(av==='no_data')return 'inactive';
+  if(av==='unsupported')return 'hidden';
+  if(av==='not_built')return FIXTURE?'live':'hidden';
+  return real(a.metric)?'live':'hidden'}
+const prio=a=>(a.priority&&a.priority.score_internal)||0;
 
 /* ---------------- chart components (block spec -> html) ---------------- */
 function nice(mx){const e=Math.pow(10,Math.floor(Math.log10(mx||1))),f=mx/e;return (f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*e}
@@ -292,10 +302,10 @@ const C={
    ${[0,mx/2,mx].map(t=>`<line x1="${pl}" x2="${w-8}" y1="${y(t)}" y2="${y(t)}" style="stroke:var(--grid)"/><text x="${pl-6}" y="${y(t)+4}" font-size="10.5" text-anchor="end" class="n">${+t.toFixed(2)}${u}</text>`).join('')}
    ${d.map((x,i)=>{const bx=pl+i*bw+bw*.2,b2=bw*.6,top=y(x.v),r=Math.min(4,pt+ih-top);return `<path d="M${bx},${pt+ih}V${top+r}q0,-${r} ${r},-${r}h${b2-2*r}q${r},0 ${r},${r}V${pt+ih}Z" style="fill:${hl.includes(i)?'var(--crit)':'var(--practice)'};opacity:${hl.length&&!hl.includes(i)?.55:1}" data-tip="${esc(x.l)}: ${x.v}${u}${cmp?` · ${cmp.label} ${cmp.values[i]}${u}`:''}"/><text x="${bx+b2/2}" y="${h-7}" font-size="11" text-anchor="middle">${esc(x.l)}</text>`}).join('')}
    ${cmp?`<path d="${cmp.values.map((c,i)=>`${i?'L':'M'}${pl+i*bw+bw/2},${y(c)}`).join('')}" fill="none" style="stroke:var(--cmp)" stroke-width="2" stroke-dasharray="5 4"/>`:''}</svg></div>`},
- hbars(b,{w=580}={}){const rows=b.rows,cmpOk=b.cmp_prov!=='illustrative',u=b.unit||'';
+ hbars(b,{w=580}={}){const rows=b.rows,cmpOk=ok(b.cmp_prov),u=b.unit||'';
    const max=b.max||Math.max(...rows.flatMap(r=>[r.v,r.c??0,r.t??0]))*1.1,lw=Math.min(190,Math.max(90,Math.max(...rows.map(r=>r.l.length))*7+8)),bw=w-lw-96,rh=30,h=rows.length*rh+4,s=v=>v/max*bw;
    return `<div class="tw"><svg viewBox="0 0 ${w} ${h}" width="100%" style="max-width:${w}px;display:block" role="img" aria-label="${esc(b.title||'Bars')}: ${rows.map(r=>r.l+' '+(r.lab||r.v+u)).join(', ')}">${rows.map((r,i)=>{const y=i*rh+3,c=cmpOk?r.c:null;return `<text x="0" y="${y+15}" font-size="12.5" class="ink">${esc(r.l)}</text><rect x="${lw}" y="${y+6}" width="${Math.max(3,s(r.v))}" height="10" rx="5" style="fill:${TONE[r.tone]||TONE.practice}" data-tip="${esc(r.l)}: ${r.v}${u}${c!=null?` · ICB ${c}${u}`:''}"/>${r.t!=null?`<rect x="${lw+s(r.t)-1}" y="${y}" width="2" height="22" style="fill:var(--target)" data-tip="Threshold ${r.t}${u}"/>`:''}${c!=null?`<rect x="${lw+s(c)-1.5}" y="${y+1}" width="3" height="20" rx="1" style="fill:var(--cmp)" data-tip="ICB ${c}${u}"/>`:''}<text x="${lw+Math.max(s(r.v),c!=null?s(c):0,r.t!=null?s(r.t):0)+8}" y="${y+15}" font-size="12.5" class="n ink">${esc(r.lab??(r.v+u))}</text>`}).join('')}</svg></div>`},
- lines(b,{w=580,h=190}={}){if(b.compact){w=460;h=150}const series=b.series.filter(s=>(s.prov??b.prov)!=='illustrative');if(!series.length)return null;
+ lines(b,{w=580,h=190}={}){if(b.compact){w=460;h=150}const series=b.series.filter(s=>ok(s.prov??b.prov));if(!series.length)return null;
    const L=b.labels,pl=38,pt=12,iw=w-pl-112,ih=h-24-pt,all=series.flatMap(s=>s.values),mn=Math.min(...all),mx=Math.max(...all),pad=(mx-mn||1)*.12,lo=mn-pad,hi=mx+pad,x=i=>pl+i*iw/(L.length-1),y=v=>pt+ih-(v-lo)/(hi-lo)*ih,u=b.unit||'';
    const st=nice((hi-lo)/3),ticks=[];for(let t=Math.ceil(lo/st)*st;t<=hi;t+=st)ticks.push(+t.toFixed(2));
    const lab=series.map((s,k)=>({k,y:y(s.values[s.values.length-1])})).sort((a,b)=>a.y-b.y);for(let i=1;i<lab.length;i++)if(lab[i].y-lab[i-1].y<14)lab[i].y=lab[i-1].y+14;const LY={};lab.forEach(o=>LY[o.k]=o.y);
@@ -303,14 +313,14 @@ const C={
    ${series.map((s,k)=>{const col=TONE[s.tone]||TONE.practice;return `<path d="${s.values.map((v,i)=>`${i?'L':'M'}${x(i)},${y(v)}`).join('')}" fill="none" style="stroke:${col}" stroke-width="2.25"/>${s.values.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="${i===s.values.length-1?4.5:3}" style="fill:${col};stroke:var(--card)" stroke-width="2" data-tip="${esc(s.name)} · ${esc(L[i])}: ${v}${b.absolute?u:''}"/>`).join('')}<text x="${x(s.values.length-1)+10}" y="${LY[k]+4}" font-size="12" class="ink" style="font-weight:600">${esc(s.name)}</text>`}).join('')}</svg></div>`},
  heatmap(b,{w=560}={}){w=Math.min(w,720);const lw=48,cw=(w-lw)/b.cols.length,ch=26,h=b.rows.length*ch+26,ramp=['--h0','--h1','--h2','--h3','--h4','--h5'],c=x=>`var(${ramp[Math.min(5,Math.floor(x/b.max*6))]})`;
    return `<div class="tw"><svg viewBox="0 0 ${w} ${h}" width="100%" style="max-width:${w}px;display:block" role="img" aria-label="${esc(b.title)}">${b.cols.map((d,j)=>`<text x="${lw+j*cw+cw/2}" y="14" font-size="11" text-anchor="middle">${esc(d)}</text>`).join('')}${b.rows.map((r,i)=>`<text x="0" y="${24+i*ch+16}" font-size="11" class="n">${esc(r)}</text>`+b.cols.map((d,j)=>{const x=b.values[i][j];return `<rect x="${lw+j*cw+1}" y="${24+i*ch}" width="${cw-2}" height="${ch-2}" rx="4" style="fill:${x==null?'var(--hna)':c(x)}" data-tip="${esc(d)} ${esc(r)}: ${x==null?'too few calls':x+(b.unit||'')}"/>${x!=null&&x>=b.max*.62?`<text x="${lw+j*cw+cw/2}" y="${24+i*ch+16}" font-size="10.5" text-anchor="middle" class="n" style="fill:#fff">${x}</text>`:''}`}).join('')).join('')}</svg></div>`},
- outcomes(b,{w=580}={}){const steps=b.steps.filter(s=>s.prov!=='illustrative');if(steps.length<2)return null;const mx=steps[0].v,rh=32,h=steps.length*rh+4,lw=170,bw=w-lw-120;
+ outcomes(b,{w=580}={}){const steps=b.steps.filter(s=>ok(s.prov));if(steps.length<2)return null;const mx=steps[0].v,rh=32,h=steps.length*rh+4,lw=170,bw=w-lw-120;
    return `<div class="tw"><svg viewBox="0 0 ${w} ${h}" width="100%" style="max-width:${w}px;display:block" role="img" aria-label="${esc(b.title)}: ${steps.map(s=>s.l+' '+s.v).join(', ')}">${steps.map((s,i)=>{const y=i*rh+2,ww=Math.max(4,s.v/mx*bw);return `<text x="0" y="${y+19}" font-size="12.5" class="ink">${esc(s.l)}</text><rect x="${lw}" y="${y+7}" width="${ww}" height="16" rx="8" style="fill:${TONE[s.tone]||TONE.practice}" data-tip="${esc(s.l)}: ${s.v.toLocaleString('en-GB')} calls"/><text x="${lw+ww+8}" y="${y+19}" font-size="12.5" class="n ink">${s.v.toLocaleString('en-GB')} · ${esc(s.p)}</text>`}).join('')}</svg></div>`},
  table(b){const rows=b.rows.filter(r=>r.slice(1).some(real));if(!rows.length)return null;return `<div class="tw"><table class="dt"><thead><tr>${b.columns.map(c=>`<th scope="col">${esc(c)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map((c,j)=>j?`<td class="n">${V(c)}</td>`:`<td>${V(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`},
  paired(b){return `<div style="display:grid;gap:8px">${b.rows.map(r=>`<div class="pair"><div><small>Patients say</small>${esc(r.patient)}</div><span class="vd ${r.verdict}">${esc(r.verdict)}</span><div><small>Data shows</small>${esc(r.operational)}</div></div>`).join('')}</div>`},
  note(b){return `<div class="note">${T(b.text)}</div>`}
 };
 /* returns html or '' when the block has nothing real to show */
-function block(b,opts,wrap=true){if(b.prov==='illustrative')return '';const f=C[b.type];if(!f)return '';const inner=f(b,opts);if(inner==null)return '';
+function block(b,opts,wrap=true){if(!ok(b.prov))return '';const f=C[b.type];if(!f)return '';const inner=f(b,opts);if(inner==null)return '';
   if(!wrap)return (b.note?`<div class="note">${esc(b.note)}</div>`:'')+inner;
   return `<div class="panel">${b.title?`<b>${esc(b.title)}</b>`:''}${b.note?`<div class="note">${esc(b.note)}</div>`:''}${inner}</div>`}
 function spark(vals,{w=130,h=44,tone='practice'}={}){const mn=Math.min(...vals),mx=Math.max(...vals),r=mx-mn||1,p=5,col=TONE[tone];
@@ -319,14 +329,15 @@ function spark(vals,{w=130,h=44,tone='practice'}={}){const mn=Math.min(...vals),
 
 /* ================= L1 ================= */
 function render(){
-  const p=P.practice;document.title=`${p.name} · Practice Intelligence`;
+  const p=P.practice;document.title=`${p.name} · Practice Intelligence${FIXTURE?' (design reference)':''}`;
+  $('#fixtureBanner').hidden=!FIXTURE;
   $('#pRun').textContent=`${p.period.label} data`;
   $('#pName').textContent=p.name;
   $('#pSub').innerHTML=[esc(p.icb),`PCN of ${p.pcn.size} practices`,`${esc(p.period.label)} data`].map(s=>`<span>${s}</span>`).join('');
   $('#pCtx').innerHTML=P.context.filter(c=>real(c.value)).map(c=>`<div class="ctx"${c.hint?` title="${esc(c.hint)}"`:''}><b class="num">${V(c.value)}${real(c.delta)?`<small>${V(c.delta)}</small>`:''}</b><span>${esc(c.label)}</span></div>`).join('');
 
   /* assessment + attention */
-  const lines=P.assessment.lines.filter(l=>l.prov!=='illustrative'&&P.areas[l.area]&&areaState(P.areas[l.area])==='live');
+  const lines=P.assessment.lines.filter(l=>ok(l.prov)&&P.areas[l.area]&&areaState(P.areas[l.area])==='live');
   $('#summary').hidden=!lines.length;
   $('#assess').innerHTML=lines.map(l=>`<li><span class="ic ${l.status}" aria-label="${ST[l.status][1]}">${ST[l.status][2]}</span><span>${esc(l.text)}</span></li>`).join('');
   const at=P.attention,aa=P.areas[at.area],showAt=real(at.metric)&&aa&&areaState(aa)==='live';
@@ -339,7 +350,7 @@ function render(){
      <div class="cta">Open focused investigation →</div>`}
 
   /* what changed: section hidden if nothing real was produced; message if engine found nothing material */
-  const all=P.changes.items,ch=all.filter(c=>real(c.delta)&&c.series_prov!=='illustrative'&&P.areas[c.area]&&areaState(P.areas[c.area])!=='hidden');
+  const all=P.changes.items,ch=all.filter(c=>real(c.delta)&&ok(c.series_prov)&&P.areas[c.area]&&areaState(P.areas[c.area])!=='hidden');
   $('#chWrap').hidden=all.length>0&&!ch.length;
   $('#chBasis').textContent=P.changes.basis;
   $('#changed').innerHTML=ch.length?ch.map(c=>{const cls=c.good===true?'up':c.good===false?'down':'neu',tone=c.good===true?'good':c.good===false?'crit':'practice';
@@ -349,11 +360,11 @@ function render(){
   /* access measures: only real ones; hidden entirely if none */
   const ms=P.access_measures.items.filter(m=>real(m.value));
   $('#msWrap').hidden=!ms.length;
-  $('#contract').innerHTML=ms.map(m=>{const b=m.bullet;return `<button class="ct" data-open="${m.area}"><div class="k">${esc(m.label)} · ${esc(m.sub)}</div><div class="v num">${V(m.value)}</div>${bullet(b.v,b.cmp,b.max,{t:b.target,tone:statusTone(m.status)})}<div class="f"><span>${esc(b.cmp_label||'')}${b.target_label?' · '+esc(b.target_label):''}</span></div>${m.footnote?`<div class="fn">${esc(m.footnote)}</div>`:''}<div class="f">${pill(m.status)}${std(m.assurance)}</div></button>`}).join('');
+  $('#contract').innerHTML=ms.map(m=>{const b=m.bullet;return `<button class="ct" data-open="${m.area}"><div class="k">${esc(m.label)} · ${esc(m.sub)}</div><div class="v num">${V(m.value)}</div>${base(m.value)}${bullet(b.v,b.cmp,b.max,{t:b.target,tone:statusTone(m.status)})}<div class="f"><span>${esc(b.cmp_label||'')}${b.target_label?' · '+esc(b.target_label):''}</span></div>${m.footnote?`<div class="fn">${esc(m.footnote)}</div>`:''}<div class="f">${pill(m.status)}${std(m.assurance)}</div></button>`}).join('');
 
   /* groups (v8: one group per management area family) */
   $('#groups').innerHTML=P.groups.map(g=>{const items=Object.entries(P.areas).filter(([,a])=>a.group===g.id&&areaState(a)!=='hidden')
-      .sort((x,y)=>(areaState(x[1])==='inactive')-(areaState(y[1])==='inactive')||ORD[x[1].status]-ORD[y[1].status]||(y[1].priority||0)-(x[1].priority||0));
+      .sort((x,y)=>(areaState(x[1])==='inactive')-(areaState(y[1])==='inactive')||ORD[x[1].status]-ORD[y[1].status]||prio(y[1])-prio(x[1]));
     if(!items.length)return '';
     return `<section class="group" aria-labelledby="g-${g.id}"><div class="groupHead"><h4 id="g-${g.id}">${esc(g.title)}</h4><em>${esc(g.question)}</em></div><div class="board">${items.map(([id,a])=>card(id,a)).join('')}</div></section>`}).join('');
   $('#foot').innerHTML=(P.footer.note?esc(P.footer.note)+' ':'')+`Sources: ${esc(P.footer.sources)} ${esc(P.footer.licence)}`;
@@ -362,12 +373,12 @@ function card(id,a){
   if(areaState(a)==='inactive')return `<div class="card inactive ${a.wide?'wide':''}"><div class="cardtop"><span class="area">${esc(a.title)}</span>${pill('unable')}</div><h4>${esc(a.question)}</h4><div class="reason">${esc(a.unavailable_reason||'No data published for this practice this month.')}</div></div>`;
   const viz=(a.card||[]).map(b=>block(b,{},false)).filter(Boolean).join('');
   return `<button class="card ${a.wide?'wide':''}" data-open="${id}">
-   <div class="cardtop"><span class="area">${esc(a.title)}</span>${pill(a.status)}</div>
+   <div class="cardtop"><span class="area">${esc(a.title)}</span>${pill(a.availability==='not_built'?'not_built':a.status)}</div>
    <h4>${esc(a.headline)}</h4>
-   <div class="metricrow"><span class="big num">${V(a.metric)}</span><span class="unit">${T(a.metric_label)}</span></div>
+   <div class="metricrow"><span class="big num">${V(a.metric)}</span><span class="unit">${T(a.metric_label)}</span>${base(a.metric)}</div>
    ${viz?`<div class="viz">${viz}</div>`:''}
    ${a.patient_voice&&real(a.patient_voice.text)?`<div class="pv"><span>Patients say: ${V(a.patient_voice.text)}</span><span class="conf ${a.patient_voice.verdict}">${esc(a.patient_voice.verdict)}</span></div>`:''}
-   <div class="meta">${rank(a.rank)}${a.trend&&a.trend.prov!=='illustrative'?spark(a.trend.values,{w:110,h:32,tone:statusTone(a.status)}):''}</div>
+   <div class="meta">${rank(a.rank)}${a.trend&&ok(a.trend.prov)?spark(a.trend.values,{w:110,h:32,tone:statusTone(a.status)}):''}</div>
    <div class="meta">${std(a.assurance)}<span class="inv-cta">Investigate →</span></div>
   </button>`}
 
@@ -382,14 +393,14 @@ function open(id){const a=P.areas[id];if(!a||areaState(a)!=='live')return;if(!cu
   dr.hidden=false;requestAnimationFrame(()=>document.body.classList.add('open'));show();$('#dClose').focus()}
 function show(){const a=P.areas[cur],L=a.l2;document.querySelectorAll('#dTabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===tab));dr.classList.toggle('wide',tab==='l3');
   const q=(t,b)=>`<section class="q"><div class="qt">${t}</div>${b}</section>`;let h='';
-  if(tab==='l2'){const what=L.what.filter(w=>real(w.value)),where=L.where.map(b=>block(b)).filter(Boolean).join(''),look=L.investigate.filter(i=>i.prov!=='illustrative'&&real(i.text));
-    if(what.length)h+=q('What is happening',`<div class="stats">${what.map(s=>`<div class="st"><b class="num">${V(s.value)}</b><span>${esc(s.label)}</span><small>${T(s.sub)}</small></div>`).join('')}</div>`);
+  if(tab==='l2'){const what=L.what.filter(w=>real(w.value)),where=L.where.map(b=>block(b)).filter(Boolean).join(''),look=L.investigate.filter(i=>ok(i.prov)&&real(i.text));
+    if(what.length)h+=q('What is happening',`<div class="stats">${what.map(s=>`<div class="st"><b class="num">${V(s.value)}</b><span>${esc(s.label)}</span><small>${T(s.sub)}</small>${base(s.value)}</div>`).join('')}</div>`);
     if(where)h+=q('Where',where);
     if(look.length)h+=q('What to look into',`<div class="panel"><ul class="look">${look.map(i=>`<li><span class="ev ${i.kind==='association'?'t':'o'}">${i.kind==='association'?'Tested':'Observed'}</span><span>${esc(i.text)}</span></li>`).join('')}</ul><div class="note">Things to check, not recommendations.</div></div>`);
-    if(L.interpretation&&L.interpretation.prov!=='illustrative')h+=q('Assessment',`<div class="interp">${esc(L.interpretation.text)}</div>`);
+    if(L.interpretation&&ok(L.interpretation.prov)&&L.interpretation.text)h+=q('Assessment',`<div class="interp">${esc(L.interpretation.text)}</div>`);
     if(l3Tabs(a).some(t=>t.html))h+=`<button class="detailBtn" data-tab="l3">Open detail view →</button>`}
   else if(tab==='ev'){const E=L.evidence;
-    h=q('Evidence',`<div class="panel"><div class="note">Tested across ${esc(E.tested_on)}. "Holds" = strong enough to use. "No relationship found" = checked, not there. These are patterns across practices, not proof of cause.</div><table class="evtab"><tr><th>Holds</th><th></th></tr>${E.associations.length?E.associations.map(([l,r])=>`<tr><td>${esc(l)}</td><td>${esc(r)}</td></tr>`).join(''):'<tr class="no"><td>None yet</td><td></td></tr>'}<tr><th>No relationship found</th><th></th></tr>${E.no_relationship.length?E.no_relationship.map(([l,r])=>`<tr class="no"><td>${esc(l)}</td><td>${esc(r)}</td></tr>`).join(''):'<tr class="no"><td>None yet</td><td></td></tr>'}</table></div>`)
+    h=!(E.rule_version||FIXTURE)?q('Evidence',`<div class="panel"><div class="note">Relationships across practices are shown once the evidence rule is agreed.</div></div>`):q('Evidence',`<div class="panel"><div class="note">Tested across ${esc(E.tested_on)}. "Holds" = strong enough to use. "No relationship found" = checked, not there. These are patterns across practices, not proof of cause.</div><table class="evtab"><tr><th>Holds</th><th></th></tr>${E.associations.length?E.associations.map(([l,r])=>`<tr><td>${esc(l)}</td><td>${esc(r)}</td></tr>`).join(''):'<tr class="no"><td>None yet</td><td></td></tr>'}<tr><th>No relationship found</th><th></th></tr>${E.no_relationship.length?E.no_relationship.map(([l,r])=>`<tr class="no"><td>${esc(l)}</td><td>${esc(r)}</td></tr>`).join(''):'<tr class="no"><td>None yet</td><td></td></tr>'}</table></div>`)
      +q('Compared with',`<div class="panel"><div>${esc(E.comparators)}</div><div class="note">Standard: ${ASSURE[a.assurance]}</div></div>`)
      +q('Sources',`<div class="panel"><ul class="srcs">${E.sources.map(s=>`<li>${esc(s)}</li>`).join('')}</ul></div>`)}
   else{const tabs=l3Tabs(a);if(!sub||!tabs.find(t=>t.id===sub&&t.html))sub=(tabs.find(t=>t.html)||{}).id;

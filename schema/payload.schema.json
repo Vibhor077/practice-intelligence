@@ -1,13 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://practice-intelligence/schema/payload/0.2.0",
+  "$id": "https://practice-intelligence/schema/payload/0.3.0",
   "title": "Practice Intelligence payload",
   "description": "Everything the renderer needs for ONE practice for ONE reporting period. Produced by the engine; the renderer does no calculation and shows real data only.",
   "type": "object",
   "required": ["schema_version", "run", "practice", "context", "assessment", "attention", "changes", "access_measures", "groups", "areas", "footer"],
   "additionalProperties": false,
   "properties": {
-    "schema_version": {"const": "0.2.0"},
+    "schema_version": {"const": "0.3.0"},
     "run": {"type": "object", "required": ["id", "generated_at", "mode", "versions", "source_releases"],
       "properties": {"id": {"type": "string"}, "generated_at": {"type": "string", "format": "date-time"}, "mode": {"enum": ["fixture", "pipeline"]},
         "versions": {"type": "object", "required": ["schema", "metric_registry", "ruleset", "build"],
@@ -54,12 +54,13 @@
   },
   "$defs": {
     "prov": {"enum": ["real", "illustrative", "mixed"], "description": "real = produced by the pipeline run; illustrative = fixture only, never displayed; mixed = element-level provenance inside"},
-    "status": {"enum": ["attention", "watch", "normal", "good", "unable", "in_development"]},
-    "assurance": {"enum": ["contract_requirement", "national_ambition", "qof_threshold", "local_expectation", "benchmark"],
+    "status": {"enum": ["attention", "watch", "normal", "good", "unable"]},
+    "assurance": {"enum": ["contract_requirement", "national_ambition", "qof_threshold", "local_expectation", "benchmark", "none"],
       "description": "What the measure is judged against. Comes from the metric registry, never from copy. Never imply below-benchmark = breach."},
     "tone": {"enum": ["practice", "cmp", "crit", "warn", "good", "accent"]},
     "val": {"type": "object", "required": ["d", "prov"], "additionalProperties": false,
-      "properties": {"d": {"type": "string", "description": "display string, already formatted"}, "v": {"type": ["number", "null"]}, "prov": {"enum": ["real", "illustrative"], "description": "Pipeline emits only 'real'."}}},
+      "properties": {"d": {"type": "string", "description": "display string, already formatted"}, "v": {"type": ["number", "null"]}, "prov": {"enum": ["real", "illustrative"], "description": "Pipeline emits only 'real'. 'illustrative' is displayed only when run.mode is 'fixture'."},
+        "base": {"type": "string", "description": "What a percentage is out of, e.g. 'of 2,827 answered calls'. Shown in small print."}}},
     "text_item": {"type": "object", "required": ["kind", "text", "prov"],
       "properties": {"kind": {"enum": ["association", "observed"]}, "text": {"type": "string"}, "prov": {"$ref": "#/$defs/prov"}}},
     "block": {"type": "object", "required": ["type"],
@@ -69,16 +70,17 @@
       "properties": {
         "group": {"type": "string"}, "title": {"type": "string"}, "question": {"type": "string"},
         "status": {"$ref": "#/$defs/status"}, "assurance": {"$ref": "#/$defs/assurance"},
-        "priority": {"type": "number", "minimum": 0, "maximum": 1, "description": "Engine priority score; the attention panel must point at the highest."},
+        "priority": {"type": "object", "required": ["tier", "score_internal"], "description": "Ordering only; never displayed.",
+          "properties": {"tier": {"enum": ["high", "medium", "low"]}, "reasons": {"type": "array", "items": {"type": "string"}}, "score_internal": {"type": "number"}, "ruleset": {"type": "string"}}},
         "wide": {"type": "boolean"},
-        "availability": {"enum": ["available", "no_data"], "description": "no_data = built, but nothing published for this practice; renderer shows an inactive card."},
+        "availability": {"enum": ["available", "no_data", "unsupported", "not_built"], "default": "available",
+          "description": "available = shown; no_data = source exists but nothing usable for this practice (inactive card with reason); unsupported = the data cannot provide it (hidden); not_built = possible but not calculated yet (hidden in pipeline mode)."},
         "unavailable_reason": {"type": "string"},
         "headline": {"type": "string", "maxLength": 90}, "metric": {"$ref": "#/$defs/val"}, "metric_label": {"type": "string"},
         "card": {"type": "array", "items": {"$ref": "#/$defs/block"}},
-        "rank": {"type": "object", "required": ["pos", "n"], "properties": {"pos": {"type": "integer"}, "n": {"type": "integer"}}},
+        "rank": {"type": "object", "required": ["pos", "n"], "description": "Position within PCN for this measure; favourable direction comes from the registry. Omitted when the PCN is too small, values are tied, or coverage differs.", "properties": {"pos": {"type": "integer"}, "n": {"type": "integer"}}},
         "trend": {"type": "object", "required": ["values", "prov"], "properties": {"values": {"type": "array", "items": {"type": "number"}}, "prov": {"$ref": "#/$defs/prov"}}},
         "patient_voice": {"type": "object", "required": ["text", "verdict"], "properties": {"text": {"$ref": "#/$defs/val"}, "verdict": {"enum": ["confirms", "consistent", "contradicts"]}}},
-        "dev_note": {"type": "string"}, "planned": {"type": "array", "items": {"type": "string"}},
         "l2": {"type": "object", "required": ["what", "where", "investigate", "interpretation", "evidence"],
           "properties": {
             "what": {"type": "array", "maxItems": 4, "items": {"type": "object", "required": ["value", "label"], "properties": {"value": {"$ref": "#/$defs/val"}, "label": {"type": "string"}, "sub": {"type": "string"}}}},
@@ -86,13 +88,15 @@
             "investigate": {"type": "array", "maxItems": 4, "items": {"$ref": "#/$defs/text_item"}},
             "interpretation": {"type": "object", "required": ["text", "prov"], "description": "Deterministic templates now; an LLM may reword structured findings later.", "properties": {"text": {"type": "string", "maxLength": 360}, "prov": {"$ref": "#/$defs/prov"}}},
             "evidence": {"type": "object", "required": ["tested_on", "associations", "no_relationship", "sources", "comparators"],
-              "properties": {"tested_on": {"type": "string"}, "associations": {"type": "array"}, "no_relationship": {"type": "array"}, "sources": {"type": "array", "items": {"type": "string"}}, "comparators": {"type": "string"}}}}},
+              "properties": {"rule_version": {"type": "string", "description": "Evidence rule used. Without it, associations are not displayed in pipeline mode."}, "tested_on": {"type": "string"}, "associations": {"type": "array"}, "no_relationship": {"type": "array"}, "sources": {"type": "array", "items": {"type": "string"}}, "comparators": {"type": "string"}}}}},
         "l3": {"type": "object", "required": ["tabs"], "properties": {"tabs": {"type": "array", "minItems": 1,
           "items": {"type": "object", "required": ["id", "label", "blocks"], "properties": {"id": {"type": "string"}, "label": {"type": "string"}, "blocks": {"type": "array", "items": {"$ref": "#/$defs/block"}}}}}}}
       },
-      "if": {"properties": {"status": {"const": "in_development"}}},
-      "then": {"required": ["dev_note", "planned"]},
-      "else": {"required": ["headline", "metric", "metric_label", "l2"]}
+      "allOf": [
+        {"if": {"properties": {"availability": {"enum": ["available", "not_built"]}}, "required": ["availability"]}, "then": {"required": ["headline", "metric", "metric_label", "l2"]}},
+        {"if": {"not": {"required": ["availability"]}}, "then": {"required": ["headline", "metric", "metric_label", "l2"]}},
+        {"if": {"properties": {"availability": {"const": "no_data"}}, "required": ["availability"]}, "then": {"required": ["unavailable_reason"]}}
+      ]
     }
   }
 }

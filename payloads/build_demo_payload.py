@@ -15,15 +15,16 @@ import json, pathlib
 
 def R(d, v=None): return {"d": d, "v": v, "prov": "real"}
 def X(d, v=None): return {"d": d, "v": v, "prov": "illustrative"}
+def PR(tier, score): return {"tier": tier, "score_internal": score, "reasons": [], "ruleset": "fixture"}
 
 payload = {
-  "schema_version": "0.2.0",
+  "schema_version": "0.3.0",
   "run": {"id": "demo-2026-07", "generated_at": "2026-09-24T12:00:00Z", "mode": "fixture",
-          "versions": {"schema": "0.2.0", "metric_registry": "0.1.0", "ruleset": "0.0.0", "build": "fixture"},
+          "versions": {"schema": "0.3.0", "metric_registry": "0.1.0", "ruleset": "0.0.0", "build": "fixture"},
           "source_releases": ["gpad/2026-07", "cbt/2026-07", "ocs/2026-07", "reg/2026-07", "wf/2026-07", "gpps/2026", "qof/2025-26", "imd/2025"]},
   "practice": {
-    "ods_code": "E84000", "name": "Kilburn Park Medical Centre",
-    "icb": "North West London ICB", "pcn": {"name": "Kilburn PCN", "size": 4},
+    "ods_code": "E84042", "name": "Kilburn Park Medical Centre",
+    "icb": "NHS West and North London ICB", "pcn": {"name": "Kilburn Partnership PCN", "size": 4},
     "period": {"label": "July 2026", "end": "2026-07-31"},
   },
   "context": [
@@ -48,7 +49,7 @@ payload = {
   "attention": {
     "area": "contact", "state": "emerging_pressure",
     "title": "Telephone waiting times",
-    "text": "More than a third of answered calls wait over five minutes, the longest in your PCN. Waits are worst between 8 and 10am.",
+    "text": "More than a third of answered calls wait over five minutes, the longest in your PCN. Long waits run through the core day, not just the morning peak.",
     "metric": R("35.8%", 35.8), "metric_label": "of answered calls waited 5+ min",
     "compare": [
       {"label": "You", "value": R("35.8%", 35.8), "tone": "crit"},
@@ -73,10 +74,10 @@ payload = {
   "access_measures": {
     "pending_text": "The four NHS access measures are being calculated from the July 2026 appointments and telephony data.",
     "items": [
-      {"label": "Morning call wait", "sub": "8–10am, average", "value": X("6m 40s", 400), "status": "attention",
-       "assurance": "benchmark", "bullet": {"v": 400, "cmp": 170, "max": 600, "cmp_label": "ICB 2m 50s"}, "area": "contact"},
-      {"label": "Core-hours call wait", "sub": "8am–6.30pm, average", "value": X("3m 55s", 235), "status": "attention",
-       "assurance": "benchmark", "bullet": {"v": 235, "cmp": 105, "max": 420, "cmp_label": "ICB 1m 45s"}, "area": "contact"},
+      {"label": "Morning calls", "sub": "8–10am, waited 5+ min", "value": {"d": "29.8%", "v": 29.8, "prov": "real", "base": "of 841 answered calls"}, "status": "watch",
+       "assurance": "benchmark", "bullet": {"v": 29.8, "max": 60, "cmp_label": "ICB comparison after the national run"}, "area": "contact"},
+      {"label": "Core-hours calls", "sub": "10am–6.30pm, waited 5+ min", "value": {"d": "38.2%", "v": 38.2, "prov": "real", "base": "of 1,970 answered calls"}, "status": "attention",
+       "assurance": "benchmark", "bullet": {"v": 38.2, "max": 60, "cmp_label": "ICB comparison after the national run"}, "area": "contact"},
       {"label": "Clinically urgent", "sub": "dealt with same day", "value": X("84%", 84), "status": "watch",
        "assurance": "national_ambition", "bullet": {"v": 84, "cmp": 91, "max": 100, "target": 90, "cmp_label": "ICB 91%", "target_label": "Ambition 90%"},
        "footnote": "Contract: urgent requests handled same day. 90% is a national ambition, not a breach line.", "area": "appointments"},
@@ -101,77 +102,75 @@ A = payload["areas"]
 # ---------------------------------------------------------------- Contact & access
 A["contact"] = {
   "group": "access", "title": "Patient contact & access", "question": "Can patients reach us when they need us?",
-  "status": "attention", "assurance": "benchmark", "priority": 0.92,
+  "status": "attention", "assurance": "benchmark", "priority": PR("high", 0.92),
   "headline": "Patients get through, but a third of answered callers wait too long",
-  "metric": R("35.8%", 35.8), "metric_label": "of answered calls waited 5+ min",
+  "metric": {"d": "35.8%", "v": 35.8, "prov": "real", "base": "1,013 of 2,827 answered calls"}, "metric_label": "of answered calls waited 5+ min",
   "card": [{"type": "bullet_rows", "unit": "%", "rows": [
       {"label": "Waited 5+ min", "value": R("35.8%", 35.8), "cmp": 10.5, "max": 50, "tone": "crit"},
-      {"label": "Not answered", "value": X("14%", 14), "cmp": 7, "max": 50},
-      {"label": "Online requests / 1,000", "value": R("20", 20), "cmp": 43, "max": 50, "unit": ""},
+      {"label": "Missed calls", "value": R("12.1%", 12.1), "max": 50},
+      {"label": "Online requests / 1,000", "value": R("19", 19.4), "cmp": 43, "max": 50, "unit": ""},
   ]}],
   "rank": {"pos": 4, "n": 4}, "trend": {"values": [29, 31, 33, 35.8], "prov": "illustrative"},
   "patient_voice": {"text": X("38% find it easy to phone · ICB 55%"), "verdict": "confirms"},
   "l2": {
     "what": [
-      {"value": R("1,013"), "label": "calls waited 5+ min", "sub": "35.8% of answered · ICB 10.5%"},
-      {"value": R("780"), "label": "calls per 1,000 patients", "sub": "Similar practices 566"},
-      {"value": X("14%"), "label": "calls not answered", "sub": "ICB 7%"},
-      {"value": R("20"), "label": "online requests per 1,000", "sub": "ICB 43"},
+      {"value": {"d": "1,013", "v": 1013, "prov": "real", "base": "35.8% of 2,827 answered"}, "label": "calls waited 5+ min", "sub": "ICB [[10.5%]]"},
+      {"value": R("780", 779.8), "label": "calls per 1,000 patients", "sub": "5,308 calls · 6,807 patients"},
+      {"value": {"d": "12.1%", "v": 12.1, "prov": "real", "base": "640 of 5,308 calls"}, "label": "calls missed", "sub": "includes voicemail"},
+      {"value": R("19", 19.4), "label": "online requests per 1,000", "sub": "134 in July · ICB [[43]]"},
     ],
     "where": [
-      {"type": "columns", "title": "Long waits by hour", "note": "Share of answered calls waiting 5+ min. Dashed line = ICB.",
-       "unit": "%", "prov": "illustrative", "highlight": [0, 1],
-       "bars": [{"l": f"{h}:00", "v": v} for h, v in zip(range(8, 18), [62, 51, 38, 30, 24, 22, 27, 29, 25, 18])],
-       "cmp": {"label": "ICB", "values": [22, 18, 12, 9, 8, 7, 8, 9, 8, 6]}},
+      {"type": "columns", "title": "When calls come in", "note": "Inbound calls in July, by 2-hour block (NHS publishes no finer detail).",
+       "unit": "", "prov": "real", "highlight": [1],
+       "bars": [{"l": b, "v": v} for b, v in zip(["06–08", "08–10", "10–12", "12–14", "14–16", "16–18", "18–18:30"], [159, 1367, 1072, 985, 909, 674, 73])]},
+      {"type": "hbars", "title": "How long answered callers waited, by window", "note": "Share of answered calls that waited more than 5 minutes.", "unit": "%", "max": 50, "prov": "real",
+       "rows": [{"l": "8–10am", "v": 29.8, "lab": "29.8% of 841"}, {"l": "10am–6.30pm", "v": 38.2, "tone": "crit", "lab": "38.2% of 1,970"}]},
     ],
     "investigate": [
-      {"kind": "association", "prov": "real", "text": "Practices with high online use tend to receive fewer calls (479 per 1,000, against 717 for low-use practices). You receive 780 with low online use."},
-      {"kind": "association", "prov": "real", "text": "Across practices, long waits go with patients rating the phone as hard to use (r = −0.52)."},
-      {"kind": "observed", "prov": "illustrative", "text": "8–10am holds most long waits. Check phone staffing in that window."},
-      {"kind": "observed", "prov": "illustrative", "text": "[[120]] callbacks were offered but not completed. Check how incomplete callbacks are followed up."},
+      {"kind": "observed", "prov": "real", "text": "Most calls arrive 8–10am, but the longest waits are later: 38.2% of callers waited 5+ minutes between 10am and 6.30pm, against 29.8% in the morning peak. Check staffing across the whole core day, not just opening time."},
+      {"kind": "observed", "prov": "real", "text": "1 in 5 calls (1,037) ended in the phone menu before reaching the queue. Check what the menu offers; some may be resolved by the recorded message."},
+      {"kind": "observed", "prov": "real", "text": "All 804 callbacks requested in July were made."},
+      {"kind": "association", "prov": "illustrative", "text": "Practices with high online use tend to receive fewer calls. Yours has low online use and high call volume."},
     ],
-    "interpretation": {"prov": "real", "text": "Telephone waiting is the clearest access pressure. It is concentrated at opening time, sits alongside low online use, and patients report the same difficulty. Nothing here shows the cause; the morning window is the place to start."},
+    "interpretation": {"prov": "real", "text": "Telephone waiting is the clearest access pressure. Long waits run through the core day rather than only at opening time, and online requests are low. Nothing here shows the cause; staffing across 10am–6.30pm is the place to start."},
     "evidence": {
-      "tested_on": "6,076 English practices, July 2026",
-      "associations": [["Long waits vs ease of phoning (GPPS)", "−0.52"], ["Unanswered calls vs ease of phoning", "−0.47"], ["Online use vs call volume", "−0.45"], ["Online use vs morning peak", "−0.47"]],
-      "no_relationship": [["Reception staff numbers vs phone performance", "−0.001"], ["Busiest-hour depth vs experience", "+0.009"], ["Monday effect", "−0.12"]],
-      "sources": ["Cloud-based telephony data (NHS England), Jul 2026", "Online consultation submissions, Jul 2026", "GP Patient Survey 2026", "Patients registered at a GP practice, Jul 2026"],
-      "comparators": "Status against ICB. PCN shown as rank (4 practices). England in detailed analysis.",
+      "tested_on": "English practices, July 2026",
+      "associations": [["Long waits vs ease of phoning (GPPS)", "−0.52"], ["Online use vs call volume", "−0.45"]],
+      "no_relationship": [["Reception staff numbers vs phone performance", "−0.001"]],
+      "sources": ["Cloud Based Telephony: calls answered metric, durations, day and time (NHS England), Jul 2026", "Online consultation submissions, Jul 2026", "GP Patient Survey 2026", "Patients registered at a GP practice, 1 Aug 2026"],
+      "comparators": "Status against ICB. PCN shown as position (4 practices). England in detailed analysis.",
     },
   },
   "l3": {"tabs": [
     {"id": "time", "label": "Day & time", "blocks": [
-      {"type": "heatmap", "title": "Long waits by weekday and hour", "note": "% of answered calls waiting 5+ min. Grey = too few calls to show.",
-       "prov": "illustrative", "unit": "%", "cols": ["Mon", "Tue", "Wed", "Thu", "Fri"], "rows": [f"{h:02d}:00" for h in range(8, 18)],
-       "max": 72, "values": [[71,63,58,60,57],[58,50,47,49,49],[41,37,36,38,39],[33,29,28,30,31],[26,23,22,24,25],[24,21,20,22,None],[30,26,25,27,28],[32,28,27,29,30],[27,24,23,25,26],[20,17,None,18,None]]}]},
+      {"type": "heatmap", "title": "Average calls per day, by weekday and time", "note": "Inbound calls, July 2026. 2-hour blocks are the finest detail NHS publishes.",
+       "prov": "real", "unit": " calls", "cols": ["Mon", "Tue", "Wed", "Thu", "Fri"], "rows": ["06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00"],
+       "max": 80, "values": [[8.5, 9.5, 5.4, 5.8, 6.2], [75.8, 67.2, 51.0, 49.4, 57.2], [60.5, 43.2, 46.2, 42.6, 40.8], [55.2, 40.0, 38.8, 37.4, 42.2], [46.5, 41.0, 38.8, 37.2, 35.0], [37.0, 29.0, 25.8, 27.8, 28.2], [3.8, 3.5, 3.2, 2.8, 2.8]]}]},
     {"id": "outcomes", "label": "Call outcomes", "blocks": [
-      {"type": "outcomes", "title": "What happened to calls in July", "note": "Outcomes are not additive: a caller can hang up and be offered a callback.",
-       "prov": "mixed", "steps": [
-         {"l": "Calls received", "v": 5310, "p": "100%", "prov": "real"},
-         {"l": "Answered", "v": 4570, "p": "86%", "prov": "illustrative"},
-         {"l": "Hung up before queue", "v": 265, "p": "5%", "tone": "crit", "prov": "illustrative"},
-         {"l": "Hung up while waiting", "v": 475, "p": "9%", "tone": "crit", "prov": "illustrative"},
-         {"l": "Callback offered", "v": 410, "p": "8%", "prov": "illustrative"},
-         {"l": "Callback completed", "v": 290, "p": "71% of offered", "tone": "warn", "prov": "illustrative"}]}]},
+      {"type": "outcomes", "title": "What happened to calls in July", "note": "These four outcomes add up to all 5,308 calls. Ending in the phone menu is not necessarily a failure.",
+       "prov": "real", "steps": [
+         {"l": "Calls received", "v": 5308, "p": "100%", "prov": "real"},
+         {"l": "Answered by a person", "v": 2827, "p": "53%", "prov": "real"},
+         {"l": "Ended in phone menu", "v": 1037, "p": "20%", "prov": "real"},
+         {"l": "Asked for a callback", "v": 804, "p": "15%", "prov": "real"},
+         {"l": "Missed (incl. voicemail)", "v": 640, "p": "12%", "tone": "crit", "prov": "real"}]}]},
     {"id": "trend", "label": "Trend", "blocks": [
-      {"type": "lines", "title": "Long waits and call volume", "note": "Indexed, April = 100. Each line on its own base.",
+      {"type": "lines", "title": "Long waits and call volume", "note": "Indexed, April = 100. Needs the earlier telephony months.",
        "labels": ["Apr", "May", "Jun", "Jul"], "prov": "illustrative",
        "series": [{"name": "Waited 5+ min", "values": [100, 107, 114, 123], "tone": "crit"},
-                  {"name": "Calls / 1,000", "values": [100, 102, 105, 109], "tone": "practice"},
-                  {"name": "Online / 1,000", "values": [100, 99, 101, 100], "tone": "cmp"}]}]},
+                  {"name": "Calls / 1,000", "values": [100, 102, 105, 109], "tone": "practice"}]}]},
     {"id": "compare", "label": "PCN · ICB · England", "blocks": [
-      {"type": "table", "title": "Compared with peers", "columns": ["Measure", "You", "PCN rank", "ICB", "England"],
-       "rows": [["Waited 5+ min", R("35.8%"), R("4 of 4"), R("10.5%"), X("12.8%")],
-                ["Calls per 1,000", R("780"), R("4 of 4"), X("610"), X("598")],
-                ["Hung up while waiting", X("9%"), X("4 of 4"), X("4%"), X("5%")],
-                ["Callbacks completed", X("71%"), X("3 of 4"), X("84%"), X("83%")]]}]},
+      {"type": "table", "title": "Compared with peers", "columns": ["Measure", "You", "PCN position", "ICB", "England"],
+       "rows": [["Waited 5+ min", R("35.8%"), X("4 of 4"), X("10.5%"), X("12.8%")],
+                ["Calls per 1,000", R("780"), X("4 of 4"), X("610"), X("598")],
+                ["Missed calls", R("12.1%"), X("–"), X("–"), X("–")]]}]},
   ]},
 }
 
 # ---------------------------------------------------------------- Appointment access
 A["appointments"] = {
   "group": "access", "title": "Appointment access", "question": "Are patients getting appropriate care quickly enough?",
-  "status": "watch", "assurance": "national_ambition", "priority": 0.55,
+  "status": "watch", "assurance": "national_ambition", "priority": PR("medium", 0.55),
   "headline": "Routine waits compare well; urgent same-day is below the 90% ambition",
   "metric": X("84%", 84), "metric_label": "of clinically urgent requests dealt with same day",
   "card": [{"type": "bullet_rows", "unit": "%", "rows": [
@@ -214,7 +213,7 @@ A["appointments"] = {
 # ---------------------------------------------------------------- Workforce & capacity
 A["workforce"] = {
   "group": "capacity", "title": "Workforce & capacity", "question": "Is our capacity keeping pace with population and workload?",
-  "status": "watch", "assurance": "benchmark", "priority": 0.5,
+  "status": "watch", "assurance": "benchmark", "priority": PR("medium", 0.5),
   "headline": "Appointment activity is rising faster than GP capacity",
   "metric": X("2,196", 2196), "metric_label": "patients per GP FTE · ICB 1,980",
   "card": [{"type": "lines", "labels": ["May", "Jun", "Jul"], "prov": "mixed", "compact": True, "note": "Indexed, May = 100",
@@ -259,7 +258,7 @@ A["workforce"] = {
 # ---------------------------------------------------------------- Missed appointments
 A["missed"] = {
   "group": "capacity", "title": "Missed appointments", "question": "Where are we losing usable appointment capacity?",
-  "status": "watch", "assurance": "benchmark", "priority": 0.45,
+  "status": "watch", "assurance": "benchmark", "priority": PR("medium", 0.45),
   "headline": "Missed appointments cluster in bookings made further ahead",
   "metric": R("7.5%", 7.5), "metric_label": "of appointments missed in July · 9.4% in May",
   "card": [{"type": "columns", "unit": "%", "prov": "real", "compact": True, "title": "Missed, by time from booking",
@@ -298,7 +297,7 @@ A["missed"] = {
 # ---------------------------------------------------------------- QOF
 A["qof"] = {
   "group": "clinical", "title": "QOF & income opportunity", "question": "Where are we leaving QOF achievement and income on the table?",
-  "status": "attention", "assurance": "qof_threshold", "priority": 0.7,
+  "status": "attention", "assurance": "qof_threshold", "priority": PR("high", 0.7),
   "headline": "Most unachieved QOF points are in childhood immunisations",
   "metric": R("75.2", 75.2), "metric_label": "QOF points not achieved · 86.7% achieved (2025/26)",
   "card": [{"type": "bullet_rows", "unit": " pts", "rows": [
@@ -347,7 +346,7 @@ A["qof"] = {
 # ---------------------------------------------------------------- Patient experience
 A["experience"] = {
   "group": "quality", "title": "Patient experience", "question": "What are patients telling us, and does it match the operational evidence?",
-  "status": "watch", "assurance": "benchmark", "priority": 0.4,
+  "status": "watch", "assurance": "benchmark", "priority": PR("low", 0.4),
   "headline": "Patients confirm the phone problem; appointment times are rated well",
   "metric": X("38%", 38), "metric_label": "find it easy to contact the practice by phone",
   "card": [{"type": "bullet_rows", "unit": "%", "rows": [
@@ -387,22 +386,19 @@ A["experience"] = {
 # ---------------------------------------------------------------- Prevention (in development)
 A["prevention"] = {
   "group": "prevention", "title": "Prevention & population health", "question": "Where might preventive or ongoing care need further investigation?",
-  "status": "watch", "assurance": "benchmark", "priority": 0.3, "wide": True,
-  "headline": "Some disease registers may warrant case-finding review against expected need",
-  "metric": X("≈87", 87), "metric_label": "modelled register gap · method to validate",
-  "card": [{"type": "bullet_rows", "unit": "", "rows": [
-      {"label": "Hypertension", "value": X("38", 38), "max": 45, "tone": "crit"},
-      {"label": "Heart disease", "value": X("22", 22), "max": 45, "tone": "crit"},
-      {"label": "AF", "value": X("20", 20), "max": 45, "tone": "crit"}]}],
+  "availability": "not_built", "status": "watch", "assurance": "none", "priority": PR("low", 0.3), "wide": True,
+  "headline": "Recorded disease prevalence compared with similar areas",
+  "metric": X("3 of 8", 3), "metric_label": "registers below the ICB rate · recorded prevalence, not modelled",
+  "card": [{"type": "bullet_rows", "unit": "%", "prov": "illustrative", "rows": [
+      {"label": "Hypertension", "value": X("9.0%", 9.0), "cmp": 11.2, "max": 20},
+      {"label": "Diabetes", "value": X("6.4%", 6.4), "cmp": 7.1, "max": 20},
+      {"label": "Atrial fibrillation", "value": X("0.8%", 0.8), "cmp": 1.2, "max": 20}]}],
   "l2": {
-    "what": [{"value": X("20"), "label": "AF below expected", "sub": "Model fit 92%"},
-             {"value": X("22"), "label": "heart disease below expected", "sub": "Model fit 77%"},
-             {"value": X("38"), "label": "hypertension below expected", "sub": "Model fit 79%"}],
+    "what": [{"value": X("9.0%"), "label": "hypertension recorded prevalence", "sub": "ICB 11.2%"}],
     "where": [], "investigate": [], "interpretation": {"prov": "illustrative", "text": ""},
-    "evidence": {"tested_on": "6,076 English practices", "associations": [], "no_relationship": [], "sources": ["QOF registers 2025/26", "Registered patients by age"], "comparators": "Expected prevalence for the practice population."}},
+    "evidence": {"tested_on": "", "associations": [], "no_relationship": [], "sources": ["QOF registers 2025/26", "Patients registered by age"], "comparators": "PCN and ICB recorded prevalence. Age-standardisation to be decided."}},
 }
 
-# ---------------------------------------------------------------- QA and footer
 payload["footer"] = {
   "sources": "NHS England GP appointments data, cloud-based telephony, online consultation submissions, GP workforce, patient registrations, QOF, GP Patient Survey, English indices of deprivation.",
   "licence": "Contains public sector information licensed under the Open Government Licence v3.0.",
